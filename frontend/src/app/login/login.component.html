@@ -1,0 +1,249 @@
+<!-- login.component.html — Maritime SSO Login (Angular, matches Dtyle.AI light theme) -->
+<div class="dtl-root">
+  <!-- Animated ocean SVG background -->
+  <svg
+    class="dtl-bg-svg"
+    viewBox="0 0 1440 900"
+    preserveAspectRatio="xMidYMid slice"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#e6f2fa" />
+        <stop offset="100%" stop-color="#d0eaf7" />
+      </linearGradient>
+      <linearGradient id="wg2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0070a8" stop-opacity=".08" />
+        <stop offset="100%" stop-color="#00b0a0" stop-opacity=".04" />
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="url(#wg1)" />
+    <!-- Wave 1 -->
+    <path
+      class="dtl-wave w1"
+      d="M0 600 Q360 520 720 580 Q1080 640 1440 560 L1440 900 L0 900Z"
+      fill="url(#wg2)"
+    />
+    <!-- Wave 2 -->
+    <path
+      class="dtl-wave w2"
+      d="M0 650 Q360 590 720 640 Q1080 690 1440 620 L1440 900 L0 900Z"
+      fill="url(#wg2)"
+      opacity=".6"
+    />
+    <!-- Decorative circles -->
+    <circle cx="100" cy="120" r="70" fill="rgba(0,130,200,.04)" />
+    <circle cx="1340" cy="200" r="90" fill="rgba(0,180,160,.04)" />
+    <circle cx="200" cy="750" r="120" fill="rgba(0,100,180,.03)" />
+    <circle cx="1380" cy="800" r="80" fill="rgba(0,160,140,.03)" />
+  </svg>
+
+  <!-- Main layout -->
+  <div class="dtl-layout">
+    <!-- ═══ LEFT PANEL ═══════════════════════════════════════════════════════ -->
+    <div class="dtl-left">
+      <!-- Logo -->
+      <div class="dtl-anim a1">
+        <img
+          src="assets/images/Dtyle-AI-Blue-text.png"
+          alt="Dtyle.AI"
+          class="dtl-logo"
+        />
+      </div>
+
+      <!-- Headline -->
+      <div class="dtl-anim a2">
+        <h1 class="dtl-heading">
+          Making Vessels<br />
+          <span class="dtl-grad1">Smarter,</span><br />
+          Safer &amp; More <span class="dtl-grad2">Efficient</span>
+        </h1>
+        <p class="dtl-sub">
+          Harness the power of artificial intelligence to transform your
+          maritime operations with real-time monitoring, predictive insights,
+          and fleet-wide optimization.
+        </p>
+      </div>
+
+      <!-- Feature cards -->
+      <div class="dtl-anim a3 dtl-features">
+        <div class="dtl-feat">
+          <div class="dtl-feat-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="6" />
+              <circle cx="12" cy="12" r="2" />
+              <path d="M12 12 2.2 6.4" stroke-width="1.4" />
+            </svg>
+          </div>
+          <div>
+            <div class="dtl-feat-label">Real-time Monitoring</div>
+            <div class="dtl-feat-sub">Live vessel tracking &amp; analytics</div>
+          </div>
+        </div>
+        <div class="dtl-feat">
+          <div class="dtl-feat-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+            >
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="m2 17 10 5 10-5" />
+              <path d="m2 12 10 5 10-5" />
+            </svg>
+          </div>
+          <div>
+            <div class="dtl-feat-label">Predictive Insights</div>
+            <div class="dtl-feat-sub">AI-driven fleet intelligence</div>
+          </div>
+        </div>
+        <div class="dtl-feat">
+          <div class="dtl-feat-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          </div>
+          <div>
+            <div class="dtl-feat-label">Secure &amp; Compliant</div>
+            <div class="dtl-feat-sub">Enterprise-grade protection</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="dtl-anim a4 dtl-stats">
+        <div class="dtl-stat">
+          <span class="dtl-stat-val">50+</span
+          ><span class="dtl-stat-lbl">Vessels Managed</span>
+        </div>
+        <div class="dtl-stat">
+          <span class="dtl-stat-val">99.9%</span
+          ><span class="dtl-stat-lbl">Uptime</span>
+        </div>
+        <div class="dtl-stat">
+          <span class="dtl-stat-val">40%</span
+          ><span class="dtl-stat-lbl">Cost Reduction</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ RIGHT PANEL — LOGIN CARD ════════════════════════════════════════ -->
+    <div class="dtl-right">
+      <div
+        class="dtl-card dtl-card-anim"
+        (mousemove)="onTilt($event)"
+        (mouseleave)="resetTilt()"
+        #card
+      >
+        <!-- Top accent line -->
+        <div class="dtl-card-line"></div>
+
+        <!-- Mobile logo -->
+        <div class="dtl-mobile-logo">
+          <img
+            src="assets/images/Dtyle-AI-Blue-text.png"
+            alt="Dtyle.AI"
+            style="height: 38px"
+          />
+        </div>
+
+        <!-- Status badge -->
+        <div class="dtl-badge">
+          <span class="dtl-badge-dot"></span>
+          MARITIME COMMAND CENTER
+        </div>
+
+        <h2 class="dtl-card-title">Welcome Back</h2>
+        <p class="dtl-card-sub">Sign in to access your admin portal</p>
+
+        <!-- Form -->
+        <form
+          [formGroup]="form"
+          (ngSubmit)="submit()"
+          novalidate
+          autocomplete="off"
+        >
+          <!-- Username / Email -->
+          <mat-form-field appearance="outline" class="dtl-field">
+            <mat-label>Username or Email</mat-label>
+            <input matInput formControlName="username" autocomplete="off" />
+            <mat-icon matPrefix class="dtl-icon">person_outline</mat-icon>
+            <mat-error *ngIf="f['username'].errors?.['required']"
+              >Username is required</mat-error
+            >
+          </mat-form-field>
+
+          <!-- Password -->
+          <mat-form-field appearance="outline" class="dtl-field">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              [type]="hidePass() ? 'password' : 'text'"
+              formControlName="password"
+              autocomplete="off"
+            />
+            <mat-icon matPrefix class="dtl-icon">lock_outline</mat-icon>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hidePass.set(!hidePass())"
+              class="dtl-eye-btn"
+            >
+              <mat-icon>{{
+                hidePass() ? "visibility_off" : "visibility"
+              }}</mat-icon>
+            </button>
+            <mat-error *ngIf="f['password'].errors?.['required']"
+              >Password is required</mat-error
+            >
+          </mat-form-field>
+
+          <!-- Error message -->
+          <div class="dtl-error" *ngIf="error()">
+            <span class="dtl-error-dot"></span>
+            {{ error() }}
+          </div>
+
+          <!-- Submit -->
+          <button class="dtl-btn" type="submit" [disabled]="loading()">
+            <mat-spinner
+              *ngIf="loading()"
+              diameter="17"
+              class="dtl-spinner"
+            ></mat-spinner>
+            <span>{{ loading() ? "Authenticating…" : "Sign In" }}</span>
+            <svg
+              *ngIf="!loading()"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <p class="dtl-copyright">
+        &copy; {{ year }} Dtyle.AI. All rights reserved.
+      </p>
+    </div>
+  </div>
+</div>

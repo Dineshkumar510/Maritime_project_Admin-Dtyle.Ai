@@ -1,0 +1,6 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* ✅ Global resets */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; }
