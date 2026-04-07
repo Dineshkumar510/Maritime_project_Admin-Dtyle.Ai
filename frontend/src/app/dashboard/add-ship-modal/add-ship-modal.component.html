@@ -1,0 +1,141 @@
+<div class="modal-container">
+  <div class="modal-header">
+    <h2 mat-dialog-title>Add New Ship</h2>
+    <button mat-icon-button (click)="close()" tabindex="-1">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="modal-content">
+      <!-- Ship Name -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Ship Name</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="e.g. MS Victoria"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>directions_boat</mat-icon>
+
+          <mat-error
+            *ngIf="
+              form.get('name')?.hasError('required') &&
+              form.get('name')?.touched
+            "
+          >
+            Ship name is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Redirect URL -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Management Dashboard URL</mat-label>
+          <input
+            matInput
+            formControlName="redirect_url"
+            placeholder="https://example.com/dashboard"
+            autocomplete="off"
+          />
+          <mat-icon matPrefix>link</mat-icon>
+
+          <mat-error
+            *ngIf="
+              form.get('redirect_url')?.hasError('required') &&
+              form.get('redirect_url')?.touched
+            "
+          >
+            Dashboard URL is required
+          </mat-error>
+
+          <mat-error
+            *ngIf="
+              form.get('redirect_url')?.hasError('pattern') &&
+              form.get('redirect_url')?.touched
+            "
+          >
+            Please enter a valid URL (http:// or https://)
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Description -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            rows="2"
+            placeholder="Optional description for this ship..."
+          ></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="upload-section" [class.has-image]="imagePreview()">
+        <label for="ship-image-upload" class="upload-area">
+          <!-- IF IMAGE EXISTS -->
+          <ng-container *ngIf="imagePreview(); else noImage">
+            <img [src]="imagePreview()" alt="Preview" class="preview-img" />
+
+            <div class="upload-overlay">
+              <mat-icon>edit</mat-icon>
+              <span>Change Image</span>
+            </div>
+          </ng-container>
+
+          <!-- NO IMAGE -->
+          <ng-template #noImage>
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+            <span class="upload-text">Click to upload Ship Image</span>
+            <span class="upload-subtext">JPG, PNG or GIF (Max 2MB)</span>
+          </ng-template>
+        </label>
+
+        <input
+          type="file"
+          id="ship-image-upload"
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          hidden
+        />
+      </div>
+    </mat-dialog-content>
+
+    <!-- Actions -->
+    <mat-dialog-actions class="modal-actions" align="end">
+      <button
+        mat-button
+        type="button"
+        (click)="close()"
+        [disabled]="submitting()"
+      >
+        Cancel
+      </button>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || submitting()"
+      >
+        <!-- LOADING -->
+        <ng-container *ngIf="submitting(); else normalBtn">
+          <mat-spinner diameter="20" class="spinner"></mat-spinner>
+          Saving...
+        </ng-container>
+
+        <!-- NORMAL -->
+        <ng-template #normalBtn>
+          <mat-icon>save</mat-icon>
+          Add Ship
+        </ng-template>
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

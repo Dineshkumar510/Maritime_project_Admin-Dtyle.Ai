@@ -1,6 +1,136 @@
-<!-- dashboard.component.html -->
-<div style="padding: 2rem;">
-  <h2>Welcome to Maritime Dashboard</h2>
-  <p>You are logged in via SSO.</p>
-  <button (click)="logout()">Logout</button>
+<div class="dashboard-wrapper" [class.dark-theme]="darkMode()">
+  <!-- Header -->
+  <header class="topbar">
+    <div class="brand">
+      <mat-icon>sailing</mat-icon>
+      <h1>Maritime Dashboard</h1>
+    </div>
+    <div class="actions">
+      <button
+        mat-icon-button
+        (click)="toggleDark()"
+        matTooltip="Toggle Dark Mode"
+      >
+        <mat-icon>{{ darkMode() ? "light_mode" : "dark_mode" }}</mat-icon>
+      </button>
+      <button mat-icon-button (click)="logout()" matTooltip="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="content">
+    <div class="page-header">
+      <h2>Manage Your Fleet</h2>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="openAddModal()"
+        class="add-btn"
+      >
+        <mat-icon>add</mat-icon> Add New Ship
+      </button>
+    </div>
+
+    <!-- LOADING STATE -->
+    <ng-container *ngIf="loading(); else notLoading">
+      <div class="ships-grid">
+        <mat-card
+          *ngFor="let skeleton of skeletons"
+          class="ship-card skeleton placeholder"
+        >
+        </mat-card>
+      </div>
+    </ng-container>
+
+    <!-- NOT LOADING -->
+    <ng-template #notLoading>
+      <!-- EMPTY STATE -->
+      <ng-container *ngIf="ships().length === 0; else hasShips">
+        <div class="empty-state">
+          <mat-icon class="huge-icon">directions_boat_filled</mat-icon>
+          <h3>No Ships Found</h3>
+          <p>You haven't added any ships to your fleet yet.</p>
+          <br />
+          <button mat-flat-button color="primary" (click)="openAddModal()">
+            Add Your First Ship
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- SHIPS LIST -->
+      <ng-template #hasShips>
+        <div class="ships-grid">
+          <mat-card
+            *ngFor="let ship of ships(); trackBy: trackById"
+            class="ship-card"
+            (click)="openShip(ship)"
+          >
+            <!-- Redirect Overlay -->
+            <div class="redirecting-overlay" *ngIf="redirecting() === ship.id">
+              <mat-spinner diameter="40"></mat-spinner>
+              <p>Redirecting to Ship SSO...</p>
+            </div>
+
+            <!-- Image -->
+            <div class="card-image-wrap">
+              <img
+                mat-card-image
+                [src]="ship.image_url || 'assets/default-ship.jpg'"
+                [alt]="ship.name"
+                (error)="img.src = 'assets/default-ship.jpg'"
+                #img
+              />
+
+              <!-- Status -->
+              <div
+                class="status-badge"
+                [ngStyle]="{ 'background-color': statusColor(ship.status) }"
+              >
+                {{ ship.status | titlecase }}
+              </div>
+
+              <!-- Delete -->
+              <button
+                mat-icon-button
+                class="delete-btn"
+                (click)="deleteShip($event, ship.id)"
+                matTooltip="Delete Ship"
+              >
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+
+            <!-- Content -->
+            <mat-card-content class="card-content">
+              <h3>{{ ship.name }}</h3>
+
+              <p class="description">
+                {{ ship.description || "No description provided." }}
+              </p>
+
+              <div class="meta">
+                <mat-icon>calendar_today</mat-icon>
+                <span> Added: {{ ship.created_at | date: "mediumDate" }} </span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </ng-template>
+    </ng-template>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; {{ year }} Dtyle Maritime Systems. All rights reserved.</p>
+  </footer>
+
+  <!-- Toast -->
+  <div *ngIf="toast()" class="toast-container" [ngClass]="toastType()">
+    <mat-icon>
+      {{ toastType() === "success" ? "check_circle" : "error" }}
+    </mat-icon>
+    <span>{{ toast() }}</span>
+  </div>
 </div>

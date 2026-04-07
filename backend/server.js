@@ -4,6 +4,8 @@ const cors        = require('cors');
 const cookieParser = require('cookie-parser');
 
 const authRoutes  = require('./routes/auth');
+const shipsRoutes = require('./routes/ships');
+const path = require('path');
 
 const app  = express();
 const PORT = process.env.PORT || 4000;
@@ -31,7 +33,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ── Routes ────────────────────────────────────────────────────────────────────
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', authRoutes);
+app.use('/api/ships', shipsRoutes);
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));

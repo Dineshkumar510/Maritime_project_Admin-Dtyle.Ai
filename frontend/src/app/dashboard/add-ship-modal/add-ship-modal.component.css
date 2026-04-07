@@ -1,0 +1,175 @@
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  color: inherit;
+  background-color: transparent;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+/* Dark mode handling inside parent wrapping */
+:host-context(.dtl-modal-dark) .modal-header,
+.dtl-modal-dark .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-content {
+  padding: 24px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-row {
+  width: 100%;
+}
+
+.upload-section {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  height: 180px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #fafafa;
+  position: relative;
+  overflow: hidden;
+}
+
+:host-context(.dtl-modal-dark) .upload-area,
+.dtl-modal-dark .upload-area {
+  border-color: #555;
+  background-color: #252525;
+}
+
+.upload-area:hover {
+  border-color: #005cbb;
+  background-color: #f0f7ff;
+}
+
+:host-context(.dtl-modal-dark) .upload-area:hover,
+.dtl-modal-dark .upload-area:hover {
+  border-color: #64b5f6;
+  background-color: #1e2c3a;
+}
+
+.upload-icon {
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+:host-context(.dtl-modal-dark) .upload-icon,
+.dtl-modal-dark .upload-icon {
+  color: #777;
+}
+
+.upload-text {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+:host-context(.dtl-modal-dark) .upload-text,
+.dtl-modal-dark .upload-text {
+  color: #ccc;
+}
+
+.upload-subtext {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.has-image .upload-area {
+  border-style: solid;
+  border-color: transparent;
+  padding: 0;
+}
+
+.upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.upload-area:hover .upload-overlay {
+  opacity: 1;
+}
+
+.modal-actions {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 0;
+}
+
+:host-context(.dtl-modal-dark) .modal-actions,
+.dtl-modal-dark .modal-actions {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.spinner {
+  margin-right: 8px;
+  display: inline-block;
+}
+
+/* Make angular material dialog completely customizable */
+::ng-deep .dtl-modal .mat-mdc-dialog-container .mdc-dialog__surface,
+::ng-deep .dtl-modal-dark .mat-mdc-dialog-container .mdc-dialog__surface {
+  padding: 0 !important;
+  border-radius: 16px !important;
+}
+
+::ng-deep .dtl-modal-dark .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: #1e1e1e !important;
+  color: #e0e0e0 !important;
+  box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.5), 0 24px 38px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Ensure Mat Input is legible in dark mode based on global styling, 
+   but just in case fix icon color */
+::ng-deep .dtl-modal-dark .mat-mdc-text-field-wrapper .mat-icon {
+  color: #aaa;
+}
