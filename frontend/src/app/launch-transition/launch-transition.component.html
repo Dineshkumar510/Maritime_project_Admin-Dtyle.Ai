@@ -1,0 +1,42 @@
+<!-- Full-screen launch transition overlay -->
+<div class="launch-screen" [ngClass]="{ 'fade-out': isFadingOut }">
+
+  <!-- Animated grid background -->
+  <div class="grid-bg"></div>
+  <div class="scanline"></div>
+
+  <!-- App icon expanding animation -->
+  <div class="launch-core" [ngClass]="{ 'expand': isExpanding }">
+
+    <!-- Icon ring -->
+    <div class="icon-ring outer"></div>
+    <div class="icon-ring mid"></div>
+    <div class="icon-ring inner"></div>
+
+    <!-- Main icon -->
+    <div class="icon-wrap">
+      <span class="app-icon">{{ shipIcon }}</span>
+    </div>
+  </div>
+
+  <!-- Text content -->
+  <div class="launch-text" [ngClass]="{ 'visible': showText }">
+    <div class="launching-label">
+      <span class="dot dot1"></span>
+      <span class="dot dot2"></span>
+      <span class="dot dot3"></span>
+      Launching System
+    </div>
+    <h2 class="ship-name">{{ shipName }}</h2>
+    <p class="system-hint">Initializing secure session...</p>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar-wrap" [ngClass]="{ 'visible': showText }">
+    <div class="progress-track">
+      <div class="progress-fill" [style.width.%]="progress"></div>
+    </div>
+    <span class="progress-label">{{ progress }}%</span>
+  </div>
+
+</div>

@@ -1,17 +1,17 @@
 <div class="dashboard-wrapper" [class.dark-theme]="darkMode()">
+
   <!-- Header -->
   <header class="topbar">
     <div class="brand">
-      <mat-icon>sailing</mat-icon>
-      <h1>Maritime Dashboard</h1>
+      <span class="brand-icon">⚓</span>
+      <div class="brand-text">
+        <h1>Maritime<span class="brand-accent">OS</span></h1>
+        <span class="brand-sub">Fleet Control Center</span>
+      </div>
     </div>
     <div class="actions">
-      <button
-        mat-icon-button
-        (click)="toggleDark()"
-        matTooltip="Toggle Dark Mode"
-      >
-        <mat-icon>{{ darkMode() ? "light_mode" : "dark_mode" }}</mat-icon>
+      <button mat-icon-button (click)="toggleDark()" matTooltip="Toggle Dark Mode">
+        <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
       <button mat-icon-button (click)="logout()" matTooltip="Logout">
         <mat-icon>logout</mat-icon>
@@ -22,128 +22,107 @@
   <!-- Main Content -->
   <main class="content">
     <div class="page-header">
-      <h2>Manage Your Fleet</h2>
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="openAddModal()"
-        class="add-btn"
-      >
-        <mat-icon>add</mat-icon> Add New Ship
+      <div>
+        <h2>Your Fleet</h2>
+        <p class="page-sub">Select a vessel to launch its management system</p>
+      </div>
+      <button mat-flat-button color="primary" (click)="openAddModal()" class="add-btn">
+        <mat-icon>add</mat-icon> Add Vessel
       </button>
     </div>
 
     <!-- LOADING STATE -->
     <ng-container *ngIf="loading(); else notLoading">
       <div class="ships-grid">
-        <mat-card
-          *ngFor="let skeleton of skeletons"
-          class="ship-card skeleton placeholder"
-        >
-        </mat-card>
+        <div *ngFor="let skeleton of skeletons" class="app-icon-card skeleton-card">
+          <div class="skeleton-icon"></div>
+          <div class="skeleton-text"></div>
+          <div class="skeleton-text-sm"></div>
+        </div>
       </div>
     </ng-container>
 
     <!-- NOT LOADING -->
     <ng-template #notLoading>
-      <!-- EMPTY STATE -->
       <ng-container *ngIf="ships().length === 0; else hasShips">
         <div class="empty-state">
-          <mat-icon class="huge-icon">directions_boat_filled</mat-icon>
-          <h3>No Ships Found</h3>
-          <p>You haven't added any ships to your fleet yet.</p>
-          <br />
+          <div class="empty-icon">⚓</div>
+          <h3>No Vessels in Fleet</h3>
+          <p>Add your first vessel to get started.</p>
           <button mat-flat-button color="primary" (click)="openAddModal()">
-            Add Your First Ship
+            Add Your First Vessel
           </button>
         </div>
       </ng-container>
 
-      <!-- SHIPS LIST -->
       <ng-template #hasShips>
         <div class="ships-grid">
-          <mat-card
+          <div
             *ngFor="let ship of ships(); trackBy: trackById"
-            class="ship-card"
+            class="app-icon-card"
+            [class.launching]="launchingId() === ship.id"
             (click)="openShip(ship)"
+            [attr.aria-label]="'Launch ' + ship.name"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="openShip(ship)"
           >
-            <!-- Redirect Overlay -->
-            <div class="redirecting-overlay" *ngIf="redirecting() === ship.id">
-              <mat-spinner diameter="40"></mat-spinner>
-              <p>Redirecting to Ship SSO...</p>
+            <div class="card-glow-ring"></div>
+
+            <div class="card-actions" (click)="$event.stopPropagation()">
+              <button mat-icon-button class="action-btn edit-btn"
+                (click)="editShip($event, ship)" matTooltip="Edit Vessel">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button class="action-btn delete-btn"
+                (click)="deleteShip($event, ship.id)" matTooltip="Remove Vessel">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
             </div>
 
-            <!-- Image -->
-            <div class="card-image-wrap">
+            <div class="icon-frame">
               <img
-                mat-card-image
                 [src]="ship.image_url || 'assets/default-ship.jpg'"
                 [alt]="ship.name"
                 (error)="img.src = 'assets/default-ship.jpg'"
                 #img
+                class="icon-img"
               />
-
-              <!-- Status -->
-              <div
-                class="status-badge"
-                [ngStyle]="{ 'background-color': statusColor(ship.status) }"
-              >
-                {{ ship.status | titlecase }}
-              </div>
-
-              <!-- Action Buttons -->
-              <div class="card-actions">
-                <!-- Edit Button -->
-                <button
-                  mat-icon-button
-                  class="edit-btn"
-                  (click)="editShip($event, ship)"
-                  matTooltip="Edit Ship"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-
-                <!-- Delete Button -->
-                <button
-                  mat-icon-button
-                  class="delete-btn"
-                  (click)="deleteShip($event, ship.id)"
-                  matTooltip="Delete Ship"
-                >
-                  <mat-icon>delete_outline</mat-icon>
-                </button>
-              </div>
+              <div class="status-dot" [style.background]="statusColor(ship.status)"
+                   [matTooltip]="ship.status | titlecase"></div>
             </div>
 
-            <!-- Content -->
-            <mat-card-content class="card-content">
-              <h3>{{ ship.name }}</h3>
+            <div class="icon-label">
+              <span class="icon-name">{{ ship.name }}</span>
+              <span class="icon-meta">{{ ship.status | titlecase }}</span>
+            </div>
 
-              <p class="description">
-                {{ ship.description || "No description provided." }}
-              </p>
-
-              <div class="meta">
-                <mat-icon>calendar_today</mat-icon>
-                <span> Added: {{ ship.created_at | date: "mediumDate" }} </span>
-              </div>
-            </mat-card-content>
-          </mat-card>
+            <div class="launch-ripple" *ngIf="launchingId() === ship.id">
+              <div class="ripple r1"></div>
+              <div class="ripple r2"></div>
+              <div class="ripple r3"></div>
+              <span class="launch-hint">Launching…</span>
+            </div>
+          </div>
         </div>
       </ng-template>
     </ng-template>
   </main>
 
-  <!-- Footer -->
   <footer class="footer">
     <p>&copy; {{ year }} Dtyle Maritime Systems. All rights reserved.</p>
   </footer>
 
-  <!-- Toast -->
   <div *ngIf="toast()" class="toast-container" [ngClass]="toastType()">
-    <mat-icon>
-      {{ toastType() === "success" ? "check_circle" : "error" }}
-    </mat-icon>
+    <mat-icon>{{ toastType() === 'success' ? 'check_circle' : 'error' }}</mat-icon>
     <span>{{ toast() }}</span>
   </div>
 </div>
+
+<app-launch-transition
+  *ngIf="showLaunchScreen()"
+  [shipName]="launchingShipName"
+  [targetUrl]="launchTargetUrl"
+  [shipIcon]="launchingShipIcon"
+  (launched)="onLaunched()"
+></app-launch-transition>

@@ -1,10 +1,7 @@
 import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  signal,
-  ChangeDetectorRef,
+  Component, OnInit, ChangeDetectionStrategy, signal, ChangeDetectorRef
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../services/auth.service';
 import { ShipsService, Ship } from '../services/ships.service';
@@ -17,133 +14,125 @@ import { AddShipModalComponent } from './add-ship-modal/add-ship-modal.component
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
-  ships = signal<Ship[]>([]);
-  loading = signal(true);
-  toast = signal('');
-  toastType = signal<'success' | 'error'>('success');
-  redirecting = signal<number | null>(null);
-  darkMode = signal(false);
+  ships       = signal<Ship[]>([]);
+  loading     = signal(true);
+  toast       = signal('');
+  toastType   = signal<'success' | 'error'>('success');
+  launchingId = signal<number | null>(null);
+  darkMode    = signal(false);
 
-  readonly year = new Date().getFullYear();
+  // Launch screen state
+  showLaunchScreen  = signal(false);
+  launchingShipName = '';
+  launchingShipIcon = '🚢';
+  launchTargetUrl   = '';
 
-  // Skeleton placeholder array for loading state
+  readonly year      = new Date().getFullYear();
   readonly skeletons = Array(6).fill(0);
 
   constructor(
     public auth: AuthService,
     private shipsService: ShipsService,
     private dialog: MatDialog,
+    private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
 
-  ngOnInit(): void {
-    this.loadShips();
-  }
+  ngOnInit(): void { this.loadShips(); }
 
   loadShips(): void {
     this.loading.set(true);
     this.shipsService.getShips().subscribe({
-      next: (r) => {
-        this.ships.set(r.ships);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.showToast('Failed to load ships', 'error');
-      },
+      next: (r) => { this.ships.set(r.ships); this.loading.set(false); },
+      error: () => { this.loading.set(false); this.showToast('Failed to load ships', 'error'); },
     });
   }
 
-  // ── Ship card click → generate SSO token → redirect to Next.js ────────────
+  // ── Ship card click → launch transition → navigate ────────────────────────
   openShip(ship: Ship): void {
-    if (this.redirecting() !== null) return;
-    this.redirecting.set(ship.id);
+    if (this.launchingId() !== null) return;
+
+    this.launchingId.set(ship.id);
+    this.cdr.markForCheck();
 
     this.auth.generateShipToken(ship.id).subscribe({
       next: (res) => {
-        window.location.href = res.ssoUrl;
+        // Collect data for the launch screen
+        this.launchingShipName = ship.name;
+        this.launchingShipIcon = '🚢';
+        this.launchTargetUrl   = res.ssoUrl;
+
+        // Slight delay so the ripple animation plays before fullscreen kicks in
+        setTimeout(() => {
+          this.showLaunchScreen.set(true);
+          this.cdr.markForCheck();
+        }, 350);
       },
       error: () => {
-        this.redirecting.set(null);
+        this.launchingId.set(null);
         this.showToast('Failed to open ship dashboard', 'error');
         this.cdr.markForCheck();
       },
     });
   }
 
-  // ── Delete ship ──────────────────────────────────────────────────────────
+  // Called by <app-launch-transition> (launched) event just before redirect
+  onLaunched(): void {
+    this.showLaunchScreen.set(false);
+    this.launchingId.set(null);
+    this.cdr.markForCheck();
+  }
+
+  // ── Delete ────────────────────────────────────────────────────────────────
   deleteShip(event: MouseEvent, id: number): void {
     event.stopPropagation();
-    if (!confirm('Remove this ship?')) return;
+    if (!confirm('Remove this vessel?')) return;
     this.shipsService.deleteShip(id).subscribe({
-      next: () => {
-        this.ships.update((s) => s.filter((x) => x.id !== id));
-        this.showToast('Ship removed');
-      },
-      error: () => this.showToast('Failed to delete ship', 'error'),
+      next: () => { this.ships.update(s => s.filter(x => x.id !== id)); this.showToast('Vessel removed'); },
+      error: () => this.showToast('Failed to delete vessel', 'error'),
     });
   }
 
-  // ── Edit ship ────────────────────────────────────────────────────────────
+  // ── Edit ──────────────────────────────────────────────────────────────────
   editShip(event: MouseEvent, ship: Ship): void {
     event.stopPropagation();
     const ref = this.dialog.open(AddShipModalComponent, {
-      width: '520px',
-      maxWidth: '95vw',
+      width: '520px', maxWidth: '95vw',
       panelClass: this.darkMode() ? ['dtl-modal-dark'] : ['dtl-modal'],
-      data: { ship, isEdit: true }, // Pass ship data for editing
+      data: { ship, isEdit: true },
     });
-    ref.afterClosed().subscribe((updatedShip) => {
-      if (updatedShip) {
-        this.ships.update((s) =>
-          s.map((x) => (x.id === updatedShip.id ? updatedShip : x))
-        );
-        this.showToast('Ship updated successfully!');
+    ref.afterClosed().subscribe(updated => {
+      if (updated) {
+        this.ships.update(s => s.map(x => x.id === updated.id ? updated : x));
+        this.showToast('Vessel updated!');
       }
     });
   }
 
-  // ── Open "Add Ship" modal ─────────────────────────────────────────────────
+  // ── Add ───────────────────────────────────────────────────────────────────
   openAddModal(): void {
     const ref = this.dialog.open(AddShipModalComponent, {
-      width: '520px',
-      maxWidth: '95vw',
+      width: '520px', maxWidth: '95vw',
       panelClass: this.darkMode() ? ['dtl-modal-dark'] : ['dtl-modal'],
     });
-    ref.afterClosed().subscribe((ship) => {
-      if (ship) {
-        this.ships.update((s) => [ship, ...s]);
-        this.showToast('Ship added successfully!');
-      }
+    ref.afterClosed().subscribe(ship => {
+      if (ship) { this.ships.update(s => [ship, ...s]); this.showToast('Vessel added!'); }
     });
   }
 
-  toggleDark(): void {
-    this.darkMode.update((v) => !v);
-  }
-  logout(): void {
-    this.auth.logout();
-  }
+  toggleDark(): void { this.darkMode.update(v => !v); }
+  logout(): void { this.auth.logout(); }
 
   showToast(msg: string, type: 'success' | 'error' = 'success'): void {
     this.toastType.set(type);
     this.toast.set(msg);
     this.cdr.markForCheck();
-    setTimeout(() => {
-      this.toast.set('');
-      this.cdr.markForCheck();
-    }, 3200);
+    setTimeout(() => { this.toast.set(''); this.cdr.markForCheck(); }, 3200);
   }
 
   statusColor(status: string): string {
-    return (
-      { active: '#00a888', maintenance: '#f09820', inactive: '#d03030' }[
-        status
-      ] || '#888'
-    );
+    return ({ active: '#00c896', maintenance: '#f09820', inactive: '#d03030' }[status] || '#888');
   }
 
-  trackById(_: number, ship: Ship): number {
-    return ship.id;
-  }
+  trackById(_: number, ship: Ship): number { return ship.id; }
 }

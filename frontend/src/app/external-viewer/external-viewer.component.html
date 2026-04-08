@@ -1,0 +1,46 @@
+<!-- System Banner -->
+<div class="system-banner" [ngClass]="{ 'visible': bannerVisible }">
+  <div class="banner-inner">
+    <span class="banner-icon">🔗</span>
+    <span class="banner-text">You are now viewing an <strong>External System</strong></span>
+    <span class="banner-sep">|</span>
+    <span class="banner-ship">{{ shipName }}</span>
+    <button class="return-btn" (click)="returnToDashboard()">
+      ← Return to Dashboard
+    </button>
+  </div>
+</div>
+
+<!-- Embedded frame / content area -->
+<div class="viewer-frame" [style.paddingTop.px]="bannerVisible ? 44 : 0">
+  <iframe
+    *ngIf="targetUrl"
+    [src]="safeUrl"
+    class="external-iframe"
+    frameborder="0"
+    allow="fullscreen"
+    title="External System"
+  ></iframe>
+
+  <!-- Fallback if iframe is blocked -->
+  <div class="iframe-blocked" *ngIf="!targetUrl">
+    <div class="blocked-icon">🚀</div>
+    <p>The external system opened in a new context.</p>
+    <button class="return-btn-big" (click)="returnToDashboard()">
+      ← Return to Dashboard
+    </button>
+  </div>
+</div>
+
+<!-- Back Navigation Warning Modal -->
+<div class="modal-backdrop" *ngIf="showWarning" (click)="dismissWarning()">
+  <div class="warning-modal" (click)="$event.stopPropagation()">
+    <div class="warning-icon">⚠️</div>
+    <h3>Leave External System?</h3>
+    <p>You are currently viewing an <strong>external system</strong>. Navigating away may close your session.</p>
+    <div class="modal-actions">
+      <button class="btn-stay" (click)="dismissWarning()">Stay Here</button>
+      <button class="btn-leave" (click)="confirmLeave()">Leave & Return to Dashboard</button>
+    </div>
+  </div>
+</div>

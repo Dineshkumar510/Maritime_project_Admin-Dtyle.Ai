@@ -1,57 +1,72 @@
-/* dashboard.component.css */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MARITIME OS – DASHBOARD  (OS Desktop-icon style)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Wrapper ──────────────────────────────────────────────────────────────── */
 .dashboard-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f4f6f8;
-  color: #333;
-  transition: background-color 0.3s, color 0.3s;
+  background: #f0f4f8;
+  color: #1a2030;
+  transition: background 0.3s, color 0.3s;
 }
-
 .dashboard-wrapper.dark-theme {
-  background-color: #121212;
-  color: #e0e0e0;
+  background: #0d1117;
+  color: #e6edf3;
 }
 
-/* Topbar */
+/* ─── Topbar ───────────────────────────────────────────────────────────────── */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: background-color 0.3s;
+  padding: 0 2rem;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  box-shadow: 0 1px 12px rgba(0,0,0,0.05);
+  transition: background 0.3s;
 }
 .dark-theme .topbar {
-  background-color: #1e1e1e;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  background: #161b22;
+  border-bottom-color: rgba(255,255,255,0.07);
+  box-shadow: 0 1px 12px rgba(0,0,0,0.4);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
-.brand h1 {
+.brand-icon {
+  font-size: 1.7rem;
+  filter: drop-shadow(0 0 6px rgba(0,92,187,0.4));
+}
+.brand-text h1 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 800;
   letter-spacing: -0.5px;
+  line-height: 1.1;
+  color: #1a2030;
 }
-.brand mat-icon {
-  font-size: 2rem;
-  width: 2rem;
-  height: 2rem;
+.dark-theme .brand-text h1 { color: #e6edf3; }
+.brand-accent {
   color: #005cbb;
+  font-style: italic;
 }
-.dark-theme .brand mat-icon {
-  color: #64b5f6;
+.brand-sub {
+  font-size: 0.68rem;
+  color: #888;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
+/* ─── Content ──────────────────────────────────────────────────────────────── */
 .content {
   flex: 1;
-  padding: 2rem;
+  padding: 2.5rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
@@ -61,187 +76,298 @@
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
 }
 .page-header h2 {
   font-size: 2rem;
-  margin: 0;
-  font-weight: 700;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
 }
+.page-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #888;
+}
+.dark-theme .page-sub { color: #8b949e; }
 
 .add-btn {
-  border-radius: 8px;
-  padding: 0 24px;
+  border-radius: 10px;
+  padding: 0 20px;
+  height: 40px;
 }
 
+/* ─── Ships grid ───────────────────────────────────────────────────────────── */
 .ships-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem;
 }
 
-.ship-card {
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+/* ─── App icon card ────────────────────────────────────────────────────────── */
+.app-icon-card {
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition:
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.22s ease,
+    background 0.2s;
+  user-select: none;
+  outline: none;
 }
-.dark-theme .ship-card {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-}
-.ship-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-}
-.dark-theme .ship-card:hover {
-  box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+.dark-theme .app-icon-card {
+  background: #161b22;
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-.card-image-wrap {
-  position: relative;
-  height: 200px;
-  overflow: hidden;
+/* Hover – lift + glow */
+.app-icon-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 16px 40px rgba(0, 92, 187, 0.18), 0 4px 12px rgba(0,0,0,0.08);
 }
-.card-image-wrap img {
+.dark-theme .app-icon-card:hover {
+  box-shadow: 0 16px 40px rgba(0, 140, 255, 0.25), 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* Active press */
+.app-icon-card:active { transform: scale(0.96); }
+
+/* Launching state – pulsing ring */
+.app-icon-card.launching {
+  pointer-events: none;
+}
+
+/* Glow ring (hidden by default, animated on hover) */
+.card-glow-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, rgba(0,92,187,0), rgba(0,180,255,0)) border-box;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.app-icon-card:hover .card-glow-ring {
+  opacity: 1;
+  border-color: rgba(0, 140, 255, 0.5);
+}
+
+/* ─── Action buttons (edit / delete) – top-right corner ───────────────────── */
+.card-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 5;
+}
+.app-icon-card:hover .card-actions { opacity: 1; transform: translateY(0); }
+
+.action-btn {
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  backdrop-filter: blur(8px);
+}
+
+.edit-btn {
+  background: rgba(0, 92, 187, 0.1) !important;
+  color: #005cbb !important;
+}
+.edit-btn:hover { background: #005cbb !important; color: white !important; }
+.dark-theme .edit-btn { background: rgba(100, 181, 246, 0.12) !important; color: #64b5f6 !important; }
+.dark-theme .edit-btn:hover { background: #64b5f6 !important; color: #0d1117 !important; }
+
+.delete-btn {
+  background: rgba(211, 47, 47, 0.1) !important;
+  color: #d32f2f !important;
+}
+.delete-btn:hover { background: #d32f2f !important; color: white !important; }
+.dark-theme .delete-btn { background: rgba(239,83,80,0.1) !important; color: #ef5350 !important; }
+.dark-theme .delete-btn:hover { background: #ef5350 !important; color: white !important; }
+
+/* mat-icon size for action buttons */
+.action-btn mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+/* ─── Icon frame (ship image) ──────────────────────────────────────────────── */
+.icon-frame {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.15),
+    0 0 0 1px rgba(0,0,0,0.06);
+  margin-bottom: 14px;
+  transition: box-shadow 0.2s;
+}
+.app-icon-card:hover .icon-frame {
+  box-shadow: 0 8px 24px rgba(0,92,187,0.25), 0 0 0 2px rgba(0,140,255,0.3);
+}
+
+.icon-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s;
+  transition: transform 0.3s ease;
 }
-.ship-card:hover .card-image-wrap img {
-  transform: scale(1.05);
-}
+.app-icon-card:hover .icon-img { transform: scale(1.08); }
 
-.status-badge {
+/* Status dot */
+.status-dot {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  color: white;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  bottom: 6px;
+  right: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.2);
 }
+.dark-theme .status-dot { border-color: #161b22; }
 
-/* Action Buttons Container */
-.card-actions {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  gap: 8px;
-  z-index: 5;
-}
-
-/* Edit Button */
-.edit-btn {
-  background: rgba(255,255,255,0.95) !important;
-  color: #005cbb !important;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,92,187,0.15);
-}
-.edit-btn:hover {
-  background: #005cbb !important;
-  color: white !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,92,187,0.3);
-}
-.dark-theme .edit-btn {
-  background: rgba(30,30,30,0.95) !important;
-  color: #64b5f6 !important;
-  box-shadow: 0 2px 8px rgba(100,181,246,0.2);
-}
-.dark-theme .edit-btn:hover {
-  background: #64b5f6 !important;
-  color: #121212 !important;
-  box-shadow: 0 4px 12px rgba(100,181,246,0.4);
-}
-
-/* Delete Button */
-.delete-btn {
-  background: rgba(255,255,255,0.95) !important;
-  color: #d32f2f !important;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(211,47,47,0.15);
-}
-.delete-btn:hover {
-  background: #d32f2f !important;
-  color: white !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(211,47,47,0.3);
-}
-.dark-theme .delete-btn {
-  background: rgba(30,30,30,0.95) !important;
-  color: #ef5350 !important;
-  box-shadow: 0 2px 8px rgba(239,83,80,0.2);
-}
-.dark-theme .delete-btn:hover {
-  background: #ef5350 !important;
-  color: #121212 !important;
-  box-shadow: 0 4px 12px rgba(239,83,80,0.4);
-}
-
-/* Smooth icon transitions for action buttons */
-.edit-btn mat-icon,
-.delete-btn mat-icon {
-  transition: transform 0.2s ease;
-}
-.edit-btn:hover mat-icon {
-  transform: rotate(-12deg);
-}
-.delete-btn:hover mat-icon {
-  transform: scale(1.1);
-}
-
-.card-content {
-  padding: 1.5rem;
-  flex: 1;
+/* ─── Label below icon ─────────────────────────────────────────────────────── */
+.icon-label {
   display: flex;
   flex-direction: column;
-}
-.card-content h3 {
-  margin: 0 0 12px 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-.description {
-  color: #666;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  flex: 1;
-}
-.dark-theme .description {
-  color: #aaa;
-}
-
-.meta {
-  display: flex;
   align-items: center;
-  gap: 8px;
-  color: #888;
-  font-size: 0.85rem;
-  margin-top: auto;
-}
-.meta mat-icon {
-  font-size: 1rem;
-  width: 1rem;
-  height: 1rem;
+  gap: 3px;
+  text-align: center;
 }
 
+.icon-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a2030;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.dark-theme .icon-name { color: #e6edf3; }
+.app-icon-card:hover .icon-name { color: #005cbb; }
+.dark-theme .app-icon-card:hover .icon-name { color: #64b5f6; }
+
+.icon-meta {
+  font-size: 0.7rem;
+  color: #999;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Launch ripple overlay ────────────────────────────────────────────────── */
+.launch-ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: rgba(0, 92, 187, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 140, 255, 0.5);
+  animation: rippleOut 1.6s ease-out infinite;
+}
+.r1 { width: 60px;  height: 60px;  animation-delay: 0s; }
+.r2 { width: 90px;  height: 90px;  animation-delay: 0.35s; }
+.r3 { width: 120px; height: 120px; animation-delay: 0.7s; }
+
+@keyframes rippleOut {
+  0%   { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.launch-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #005cbb;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+  animation: launchTextPulse 1s ease-in-out infinite alternate;
+}
+.dark-theme .launch-hint { color: #64b5f6; }
+
+@keyframes launchTextPulse {
+  from { opacity: 0.6; }
+  to   { opacity: 1; }
+}
+
+/* ─── Skeleton loading ─────────────────────────────────────────────────────── */
+.skeleton-card {
+  min-height: 180px;
+  pointer-events: none;
+  background: #fff;
+}
+.dark-theme .skeleton-card { background: #161b22; }
+
+.skeleton-icon {
+  width: 84px;
+  height: 84px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, #e8ecf0 25%, #d4dae0 50%, #e8ecf0 75%);
+  background-size: 300% 100%;
+  animation: shimmer 1.5s infinite;
+  margin-bottom: 14px;
+}
+.dark-theme .skeleton-icon {
+  background: linear-gradient(90deg, #21262d 25%, #30363d 50%, #21262d 75%);
+  background-size: 300% 100%;
+}
+
+.skeleton-text {
+  width: 80px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #e8ecf0 25%, #d4dae0 50%, #e8ecf0 75%);
+  background-size: 300% 100%;
+  animation: shimmer 1.5s infinite;
+  margin-bottom: 6px;
+}
+.skeleton-text-sm {
+  width: 50px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e8ecf0 25%, #d4dae0 50%, #e8ecf0 75%);
+  background-size: 300% 100%;
+  animation: shimmer 1.5s infinite;
+}
+.dark-theme .skeleton-text,
+.dark-theme .skeleton-text-sm {
+  background: linear-gradient(90deg, #21262d 25%, #30363d 50%, #21262d 75%);
+  background-size: 300% 100%;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Empty state ──────────────────────────────────────────────────────────── */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -249,35 +375,26 @@
   justify-content: center;
   padding: 4rem 2rem;
   text-align: center;
-  background: white;
-  border-radius: 12px;
+  background: #fff;
+  border-radius: 20px;
   margin-top: 2rem;
-  grid-column: 1 / -1;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
 }
-.dark-theme .empty-state {
-  background: #1e1e1e;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-.huge-icon {
-  font-size: 4rem;
-  width: 4rem;
-  height: 4rem;
-  color: #ccc;
-  margin-bottom: 1rem;
-}
-.dark-theme .huge-icon {
-  color: #444;
-}
+.dark-theme .empty-state { background: #161b22; }
 
+.empty-icon { font-size: 3.5rem; margin-bottom: 1rem; filter: grayscale(0.5); }
+.empty-state h3 { font-size: 1.3rem; font-weight: 700; margin: 0 0 8px; }
+.empty-state p  { color: #888; margin: 0 0 24px; }
+
+/* ─── Footer ───────────────────────────────────────────────────────────────── */
 .footer {
   text-align: center;
-  padding: 2rem;
-  font-size: 0.9rem;
-  color: #888;
+  padding: 1.5rem;
+  font-size: 0.82rem;
+  color: #aaa;
 }
 
-/* Toast */
+/* ─── Toast ────────────────────────────────────────────────────────────────── */
 .toast-container {
   position: fixed;
   bottom: 24px;
@@ -285,77 +402,27 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
+  gap: 10px;
+  padding: 10px 24px;
   border-radius: 30px;
   color: white;
   font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 9999;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  z-index: 9998;
   animation: slideUp 0.3s ease-out;
 }
 @keyframes slideUp {
   from { bottom: -50px; opacity: 0; }
-  to { bottom: 24px; opacity: 1; }
+  to   { bottom: 24px;  opacity: 1; }
 }
-.toast-container.success { background-color: #00a888; }
-.toast-container.error { background-color: #d32f2f; }
+.toast-container.success { background: #00a888; }
+.toast-container.error   { background: #d32f2f; }
 
-/* Skeleton */
-.skeleton {
-  min-height: 350px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-.dark-theme .skeleton {
-  background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
-  background-size: 200% 100%;
-}
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* Redirecting Overlay */
-.redirecting-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.85);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  backdrop-filter: blur(4px);
-}
-.dark-theme .redirecting-overlay {
-  background: rgba(30, 30, 30, 0.85);
-}
-.redirecting-overlay p {
-  font-weight: 500;
-  color: #333;
-  margin: 0;
-}
-.dark-theme .redirecting-overlay p {
-  color: #eee;
-}
-
-/* Responsive adjustments for action buttons */
-@media (max-width: 768px) {
-  .card-actions {
-    gap: 6px;
-  }
-
-  .edit-btn,
-  .delete-btn {
-    width: 36px;
-    height: 36px;
-  }
-
-  .edit-btn mat-icon,
-  .delete-btn mat-icon {
-    font-size: 18px;
-  }
+/* ─── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .ships-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem; }
+  .content    { padding: 1.5rem 1rem; }
+  .topbar     { padding: 0 1rem; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
 }
