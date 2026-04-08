@@ -1,141 +1,134 @@
 <div class="modal-container">
   <div class="modal-header">
-    <h2 mat-dialog-title>Add New Ship</h2>
-    <button mat-icon-button (click)="close()" tabindex="-1">
+    <h2>{{ title }}</h2>
+    <button mat-icon-button (click)="cancel()" class="close-btn">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <mat-dialog-content class="modal-content">
-      <!-- Ship Name -->
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Ship Name</mat-label>
-          <input
-            matInput
-            formControlName="name"
-            placeholder="e.g. MS Victoria"
-            autocomplete="off"
-          />
-          <mat-icon matPrefix>directions_boat</mat-icon>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
+    <!-- Ship Name -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Ship Name</mat-label>
+      <input matInput formControlName="name" placeholder="Enter ship name" />
+      <mat-icon matPrefix>directions_boat</mat-icon>
+      <mat-error *ngIf="form.get('name')?.hasError('required')">
+        Ship name is required
+      </mat-error>
+    </mat-form-field>
 
-          <mat-error
-            *ngIf="
-              form.get('name')?.hasError('required') &&
-              form.get('name')?.touched
-            "
-          >
-            Ship name is required
-          </mat-error>
-        </mat-form-field>
+    <!-- Redirect URL -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Dashboard URL</mat-label>
+      <input
+        matInput
+        formControlName="redirect_url"
+        placeholder="https://ship-dashboard.example.com"
+      />
+      <mat-icon matPrefix>link</mat-icon>
+      <mat-error *ngIf="form.get('redirect_url')?.hasError('required')">
+        Dashboard URL is required
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="3"
+        placeholder="Brief description of the ship"
+      ></textarea>
+      <mat-icon matPrefix>description</mat-icon>
+    </mat-form-field>
+
+    <!-- Status -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="active">Active</mat-option>
+        <mat-option value="maintenance">Maintenance</mat-option>
+        <mat-option value="inactive">Inactive</mat-option>
+      </mat-select>
+      <mat-icon matPrefix>flag</mat-icon>
+    </mat-form-field>
+
+    <!-- Image Upload or URL -->
+    <div class="image-section">
+      <h3>Ship Image</h3>
+
+      <!-- Image Preview -->
+      <div class="image-preview" *ngIf="imagePreview()">
+        <img [src]="imagePreview()" alt="Preview" />
+        <button
+          type="button"
+          mat-icon-button
+          class="clear-image-btn"
+          (click)="clearImage()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
 
-      <!-- Redirect URL -->
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Management Dashboard URL</mat-label>
-          <input
-            matInput
-            formControlName="redirect_url"
-            placeholder="https://example.com/dashboard"
-            autocomplete="off"
-          />
-          <mat-icon matPrefix>link</mat-icon>
-
-          <mat-error
-            *ngIf="
-              form.get('redirect_url')?.hasError('required') &&
-              form.get('redirect_url')?.touched
-            "
-          >
-            Dashboard URL is required
-          </mat-error>
-
-          <mat-error
-            *ngIf="
-              form.get('redirect_url')?.hasError('pattern') &&
-              form.get('redirect_url')?.touched
-            "
-          >
-            Please enter a valid URL (http:// or https://)
-          </mat-error>
-        </mat-form-field>
-      </div>
-
-      <!-- Description -->
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Description</mat-label>
-          <textarea
-            matInput
-            formControlName="description"
-            rows="2"
-            placeholder="Optional description for this ship..."
-          ></textarea>
-        </mat-form-field>
-      </div>
-
-      <!-- Image Upload -->
-      <div class="upload-section" [class.has-image]="imagePreview()">
-        <label for="ship-image-upload" class="upload-area">
-          <!-- IF IMAGE EXISTS -->
-          <ng-container *ngIf="imagePreview(); else noImage">
-            <img [src]="imagePreview()" alt="Preview" class="preview-img" />
-
-            <div class="upload-overlay">
-              <mat-icon>edit</mat-icon>
-              <span>Change Image</span>
-            </div>
-          </ng-container>
-
-          <!-- NO IMAGE -->
-          <ng-template #noImage>
-            <mat-icon class="upload-icon">cloud_upload</mat-icon>
-            <span class="upload-text">Click to upload Ship Image</span>
-            <span class="upload-subtext">JPG, PNG or GIF (Max 2MB)</span>
-          </ng-template>
-        </label>
-
+      <!-- Upload Button -->
+      <div class="upload-area" *ngIf="!imagePreview()">
         <input
           type="file"
-          id="ship-image-upload"
-          (change)="onFileSelected($event)"
           accept="image/*"
+          (change)="onFileSelected($event)"
+          #fileInput
           hidden
         />
+        <button
+          type="button"
+          mat-stroked-button
+          (click)="fileInput.click()"
+          class="upload-btn"
+        >
+          <mat-icon>cloud_upload</mat-icon>
+          Upload Image
+        </button>
+        <span class="or-text">or</span>
+        <mat-form-field appearance="outline" class="image-url-field">
+          <mat-label>Image URL</mat-label>
+          <input
+            matInput
+            formControlName="image_url"
+            placeholder="https://example.com/ship.jpg"
+            (input)="imagePreview.set($any($event.target).value)"
+          />
+          <mat-icon matPrefix>image</mat-icon>
+        </mat-form-field>
       </div>
-    </mat-dialog-content>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error()">
+      <mat-icon>error</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
 
     <!-- Actions -->
-    <mat-dialog-actions class="modal-actions" align="end">
+    <div class="modal-actions">
       <button
-        mat-button
         type="button"
-        (click)="close()"
-        [disabled]="submitting()"
+        mat-stroked-button
+        (click)="cancel()"
+        [disabled]="loading()"
       >
         Cancel
       </button>
-
       <button
+        type="submit"
         mat-flat-button
         color="primary"
-        type="submit"
-        [disabled]="form.invalid || submitting()"
+        [disabled]="form.invalid || loading()"
+        class="submit-btn"
       >
-        <!-- LOADING -->
-        <ng-container *ngIf="submitting(); else normalBtn">
-          <mat-spinner diameter="20" class="spinner"></mat-spinner>
-          Saving...
-        </ng-container>
-
-        <!-- NORMAL -->
-        <ng-template #normalBtn>
-          <mat-icon>save</mat-icon>
-          Add Ship
-        </ng-template>
+        <mat-spinner *ngIf="loading()" diameter="20"></mat-spinner>
+        <span *ngIf="!loading()">{{ submitLabel }}</span>
       </button>
-    </mat-dialog-actions>
+    </div>
   </form>
 </div>

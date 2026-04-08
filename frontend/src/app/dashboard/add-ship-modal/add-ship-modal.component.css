@@ -1,175 +1,203 @@
+/* add-ship-modal.component.css */
 .modal-container {
-  display: flex;
-  flex-direction: column;
   padding: 0;
-  color: inherit;
-  background-color: transparent;
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
 }
-
 .modal-header h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  color: inherit;
+  color: #333;
+}
+.close-btn {
+  color: #666;
+}
+.close-btn:hover {
+  color: #333;
+  background-color: #f5f5f5;
 }
 
-/* Dark mode handling inside parent wrapping */
-:host-context(.dtl-modal-dark) .modal-header,
-.dtl-modal-dark .modal-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.modal-content {
-  padding: 24px !important;
+.modal-form {
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  overflow-y: auto;
-  max-height: 70vh;
+  gap: 1.25rem;
 }
 
 .full-width {
   width: 100%;
 }
 
-.form-row {
-  width: 100%;
+/* Image Section */
+.image-section {
+  margin-top: 0.5rem;
+}
+.image-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #555;
 }
 
-.upload-section {
+.image-preview {
+  position: relative;
   width: 100%;
-  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+  margin-bottom: 1rem;
+}
+.image-preview img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+.clear-image-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #d32f2f !important;
+}
+.clear-image-btn:hover {
+  background-color: #d32f2f !important;
+  color: white !important;
 }
 
 .upload-area {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  height: 180px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: #fafafa;
-  position: relative;
-  overflow: hidden;
+  gap: 1rem;
+  align-items: stretch;
 }
 
-:host-context(.dtl-modal-dark) .upload-area,
-.dtl-modal-dark .upload-area {
-  border-color: #555;
-  background-color: #252525;
-}
-
-.upload-area:hover {
-  border-color: #005cbb;
-  background-color: #f0f7ff;
-}
-
-:host-context(.dtl-modal-dark) .upload-area:hover,
-.dtl-modal-dark .upload-area:hover {
-  border-color: #64b5f6;
-  background-color: #1e2c3a;
-}
-
-.upload-icon {
-  font-size: 3rem;
-  width: 3rem;
-  height: 3rem;
-  color: #999;
-  margin-bottom: 12px;
-}
-
-:host-context(.dtl-modal-dark) .upload-icon,
-.dtl-modal-dark .upload-icon {
-  color: #777;
-}
-
-.upload-text {
-  font-weight: 500;
-  color: #555;
-  margin-bottom: 4px;
-}
-
-:host-context(.dtl-modal-dark) .upload-text,
-.dtl-modal-dark .upload-text {
-  color: #ccc;
-}
-
-.upload-subtext {
-  font-size: 0.8rem;
-  color: #888;
-}
-
-.preview-img {
+.upload-btn {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.has-image .upload-area {
-  border-style: solid;
-  border-color: transparent;
-  padding: 0;
-}
-
-.upload-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
+  height: 48px;
+  border: 2px dashed #bbb;
+  border-radius: 8px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.upload-btn:hover {
+  border-color: #005cbb;
+  color: #005cbb;
+  background-color: rgba(0, 92, 187, 0.05);
 }
 
-.upload-area:hover .upload-overlay {
-  opacity: 1;
+.or-text {
+  text-align: center;
+  color: #999;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
+.image-url-field {
+  width: 100%;
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #fef2f2;
+  color: #d32f2f;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.error-message mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Actions */
 .modal-actions {
-  padding: 16px 24px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  margin-bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
 }
 
-:host-context(.dtl-modal-dark) .modal-actions,
-.dtl-modal-dark .modal-actions {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+.submit-btn {
+  min-width: 120px;
+  position: relative;
+}
+.submit-btn mat-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.spinner {
-  margin-right: 8px;
-  display: inline-block;
+/* Dark Theme Support */
+:host-context(.dtl-modal-dark) .modal-header {
+  border-bottom-color: #333;
 }
-
-/* Make angular material dialog completely customizable */
-::ng-deep .dtl-modal .mat-mdc-dialog-container .mdc-dialog__surface,
-::ng-deep .dtl-modal-dark .mat-mdc-dialog-container .mdc-dialog__surface {
-  padding: 0 !important;
-  border-radius: 16px !important;
+:host-context(.dtl-modal-dark) .modal-header h2 {
+  color: #e0e0e0;
 }
-
-::ng-deep .dtl-modal-dark .mat-mdc-dialog-container .mdc-dialog__surface {
-  background-color: #1e1e1e !important;
-  color: #e0e0e0 !important;
-  box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.5), 0 24px 38px 3px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Ensure Mat Input is legible in dark mode based on global styling, 
-   but just in case fix icon color */
-::ng-deep .dtl-modal-dark .mat-mdc-text-field-wrapper .mat-icon {
+:host-context(.dtl-modal-dark) .close-btn {
   color: #aaa;
+}
+:host-context(.dtl-modal-dark) .close-btn:hover {
+  color: #e0e0e0;
+  background-color: #2a2a2a;
+}
+:host-context(.dtl-modal-dark) .image-section h3 {
+  color: #bbb;
+}
+:host-context(.dtl-modal-dark) .image-preview {
+  border-color: #444;
+}
+:host-context(.dtl-modal-dark) .upload-btn {
+  border-color: #555;
+  color: #bbb;
+}
+:host-context(.dtl-modal-dark) .upload-btn:hover {
+  border-color: #64b5f6;
+  color: #64b5f6;
+  background-color: rgba(100, 181, 246, 0.1);
+}
+:host-context(.dtl-modal-dark) .error-message {
+  background-color: rgba(211, 47, 47, 0.15);
+  color: #ef5350;
+}
+:host-context(.dtl-modal-dark) .modal-actions {
+  border-top-color: #333;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modal-header {
+    padding: 1rem;
+  }
+  .modal-form {
+    padding: 1rem;
+  }
+  .modal-actions {
+    flex-direction: column;
+  }
+  .modal-actions button {
+    width: 100%;
+  }
 }

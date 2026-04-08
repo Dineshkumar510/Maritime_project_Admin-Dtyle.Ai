@@ -131,18 +131,74 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.delete-btn {
+/* Action Buttons Container */
+.card-actions {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(255,255,255,0.9) !important;
-  color: #d32f2f !important;
-  transition: background 0.2s, color 0.2s;
+  display: flex;
+  gap: 8px;
   z-index: 5;
+}
+
+/* Edit Button */
+.edit-btn {
+  background: rgba(255,255,255,0.95) !important;
+  color: #005cbb !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,92,187,0.15);
+}
+.edit-btn:hover {
+  background: #005cbb !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,92,187,0.3);
+}
+.dark-theme .edit-btn {
+  background: rgba(30,30,30,0.95) !important;
+  color: #64b5f6 !important;
+  box-shadow: 0 2px 8px rgba(100,181,246,0.2);
+}
+.dark-theme .edit-btn:hover {
+  background: #64b5f6 !important;
+  color: #121212 !important;
+  box-shadow: 0 4px 12px rgba(100,181,246,0.4);
+}
+
+/* Delete Button */
+.delete-btn {
+  background: rgba(255,255,255,0.95) !important;
+  color: #d32f2f !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(211,47,47,0.15);
 }
 .delete-btn:hover {
   background: #d32f2f !important;
   color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(211,47,47,0.3);
+}
+.dark-theme .delete-btn {
+  background: rgba(30,30,30,0.95) !important;
+  color: #ef5350 !important;
+  box-shadow: 0 2px 8px rgba(239,83,80,0.2);
+}
+.dark-theme .delete-btn:hover {
+  background: #ef5350 !important;
+  color: #121212 !important;
+  box-shadow: 0 4px 12px rgba(239,83,80,0.4);
+}
+
+/* Smooth icon transitions for action buttons */
+.edit-btn mat-icon,
+.delete-btn mat-icon {
+  transition: transform 0.2s ease;
+}
+.edit-btn:hover mat-icon {
+  transform: rotate(-12deg);
+}
+.delete-btn:hover mat-icon {
+  transform: scale(1.1);
 }
 
 .card-content {
@@ -284,4 +340,22 @@
 }
 .dark-theme .redirecting-overlay p {
   color: #eee;
+}
+
+/* Responsive adjustments for action buttons */
+@media (max-width: 768px) {
+  .card-actions {
+    gap: 6px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .edit-btn mat-icon,
+  .delete-btn mat-icon {
+    font-size: 18px;
+  }
 }

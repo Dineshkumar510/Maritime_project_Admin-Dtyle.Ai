@@ -1,42 +1,7 @@
-<!-- login.component.html — Maritime SSO Login (Angular, matches Dtyle.AI light theme) -->
+<!-- login.component.html — Maritime SSO Login (Angular, now matches Next.js SignInForm exactly) -->
 <div class="dtl-root">
-  <!-- Animated ocean SVG background -->
-  <svg
-    class="dtl-bg-svg"
-    viewBox="0 0 1440 900"
-    preserveAspectRatio="xMidYMid slice"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <defs>
-      <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#e6f2fa" />
-        <stop offset="100%" stop-color="#d0eaf7" />
-      </linearGradient>
-      <linearGradient id="wg2" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#0070a8" stop-opacity=".08" />
-        <stop offset="100%" stop-color="#00b0a0" stop-opacity=".04" />
-      </linearGradient>
-    </defs>
-    <rect width="1440" height="900" fill="url(#wg1)" />
-    <!-- Wave 1 -->
-    <path
-      class="dtl-wave w1"
-      d="M0 600 Q360 520 720 580 Q1080 640 1440 560 L1440 900 L0 900Z"
-      fill="url(#wg2)"
-    />
-    <!-- Wave 2 -->
-    <path
-      class="dtl-wave w2"
-      d="M0 650 Q360 590 720 640 Q1080 690 1440 620 L1440 900 L0 900Z"
-      fill="url(#wg2)"
-      opacity=".6"
-    />
-    <!-- Decorative circles -->
-    <circle cx="100" cy="120" r="70" fill="rgba(0,130,200,.04)" />
-    <circle cx="1340" cy="200" r="90" fill="rgba(0,180,160,.04)" />
-    <circle cx="200" cy="750" r="120" fill="rgba(0,100,180,.03)" />
-    <circle cx="1380" cy="800" r="80" fill="rgba(0,160,140,.03)" />
-  </svg>
+  <!-- Three.js animated canvas background (replaces static SVG) -->
+  <canvas #bgCanvas class="dtl-bg-canvas"></canvas>
 
   <!-- Main layout -->
   <div class="dtl-layout">
@@ -44,17 +9,13 @@
     <div class="dtl-left">
       <!-- Logo -->
       <div class="dtl-anim a1">
-        <img
-          src="assets/images/Dtyle-AI-Blue-text.png"
-          alt="Dtyle.AI"
-          class="dtl-logo"
-        />
+      <img src="../../assets/Dtyle AI -Blue-text.png" alt="Dtyle.AI" style="height:75px">
       </div>
 
       <!-- Headline -->
       <div class="dtl-anim a2">
         <h1 class="dtl-heading">
-          Making Vessels<br />
+          Making Vessels
           <span class="dtl-grad1">Smarter,</span><br />
           Safer &amp; More <span class="dtl-grad2">Efficient</span>
         </h1>
@@ -86,6 +47,7 @@
             <div class="dtl-feat-sub">Live vessel tracking &amp; analytics</div>
           </div>
         </div>
+
         <div class="dtl-feat">
           <div class="dtl-feat-icon">
             <svg
@@ -94,9 +56,9 @@
               stroke="currentColor"
               stroke-width="1.6"
             >
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="m2 17 10 5 10-5" />
-              <path d="m2 12 10 5 10-5" />
+              <circle cx="12" cy="5" r="3" />
+              <line x1="12" y1="8" x2="12" y2="21" />
+              <path d="M5 12H2a10 10 0 0 0 20 0h-3" />
             </svg>
           </div>
           <div>
@@ -104,6 +66,7 @@
             <div class="dtl-feat-sub">AI-driven fleet intelligence</div>
           </div>
         </div>
+
         <div class="dtl-feat">
           <div class="dtl-feat-icon">
             <svg
@@ -126,16 +89,16 @@
       <!-- Stats -->
       <div class="dtl-anim a4 dtl-stats">
         <div class="dtl-stat">
-          <span class="dtl-stat-val">50+</span
-          ><span class="dtl-stat-lbl">Vessels Managed</span>
+          <span class="dtl-stat-val">50+</span>
+          <span class="dtl-stat-lbl">Vessels Managed</span>
         </div>
         <div class="dtl-stat">
-          <span class="dtl-stat-val">99.9%</span
-          ><span class="dtl-stat-lbl">Uptime</span>
+          <span class="dtl-stat-val">99.9%</span>
+          <span class="dtl-stat-lbl">Uptime</span>
         </div>
         <div class="dtl-stat">
-          <span class="dtl-stat-val">40%</span
-          ><span class="dtl-stat-lbl">Cost Reduction</span>
+          <span class="dtl-stat-val">40%</span>
+          <span class="dtl-stat-lbl">Cost Reduction</span>
         </div>
       </div>
     </div>
@@ -151,6 +114,9 @@
         <!-- Top accent line -->
         <div class="dtl-card-line"></div>
 
+        <!-- Corner glow -->
+        <div class="dtl-card-glow"></div>
+
         <!-- Mobile logo -->
         <div class="dtl-mobile-logo">
           <img
@@ -160,33 +126,47 @@
           />
         </div>
 
-        <!-- Status badge -->
-        <div class="dtl-badge">
-          <span class="dtl-badge-dot"></span>
-          MARITIME COMMAND CENTER
-        </div>
+        <!-- Header -->
+          <div class="dtl-card-header">
+            <!-- Badge -->
+            <div class="dtl-badge">
+              <span class="dtl-badge-dot"></span>
+              MARITIME COMMAND CENTER
+            </div>
 
-        <h2 class="dtl-card-title">Welcome Back</h2>
-        <p class="dtl-card-sub">Sign in to access your admin portal</p>
+            <!-- Title -->
+            <h2 class="dtl-card-title">Welcome Back</h2>
 
-        <!-- Form -->
+            <!-- Subtitle -->
+            <p class="dtl-card-sub">
+              Sign in to access your admin portal
+            </p>
+          </div>
+
+        <!-- Form — UPDATED to match Next.js SignInForm exactly (only this part changed) -->
         <form
           [formGroup]="form"
           (ngSubmit)="submit()"
           novalidate
           autocomplete="off"
         >
-          <!-- Username / Email -->
+          <!-- Email Address (exact label + envelope icon from Next.js) -->
           <mat-form-field appearance="outline" class="dtl-field">
-            <mat-label>Username or Email</mat-label>
+            <mat-label>Email Address</mat-label>
             <input matInput formControlName="username" autocomplete="off" />
-            <mat-icon matPrefix class="dtl-icon">person_outline</mat-icon>
-            <mat-error *ngIf="f['username'].errors?.['required']"
-              >Username is required</mat-error
-            >
+            <mat-icon matPrefix class="dtl-icon">
+              <!-- Exact SVG from Next.js SignInForm -->
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="2" y="4" width="20" height="16" rx="3" />
+                <path d="m2 7 10 7 10-7" />
+              </svg>
+            </mat-icon>
+            <mat-error *ngIf="f['username'].errors?.['required']">
+              Username is required
+            </mat-error>
           </mat-form-field>
 
-          <!-- Password -->
+          <!-- Password (kept exactly as original) -->
           <mat-form-field appearance="outline" class="dtl-field">
             <mat-label>Password</mat-label>
             <input
@@ -207,18 +187,18 @@
                 hidePass() ? "visibility_off" : "visibility"
               }}</mat-icon>
             </button>
-            <mat-error *ngIf="f['password'].errors?.['required']"
-              >Password is required</mat-error
-            >
+            <mat-error *ngIf="f['password'].errors?.['required']">
+              Password is required
+            </mat-error>
           </mat-form-field>
 
-          <!-- Error message -->
+          <!-- Error message (exact same as Next.js) -->
           <div class="dtl-error" *ngIf="error()">
             <span class="dtl-error-dot"></span>
             {{ error() }}
           </div>
 
-          <!-- Submit -->
+          <!-- Submit (kept exactly as original) -->
           <button class="dtl-btn" type="submit" [disabled]="loading()">
             <mat-spinner
               *ngIf="loading()"

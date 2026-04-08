@@ -60,4 +60,24 @@ export class ShipsService {
       }>(`${this.api}/${id}`, { withCredentials: true })
       .pipe(catchError((err) => throwError(() => err)));
   }
+
+  updateShip(
+    id: number,
+    payload: AddShipPayload,
+  ): Observable<{ success: boolean; ship: Ship }> {
+    const fd = new FormData();
+    fd.append('name', payload.name);
+    fd.append('redirect_url', payload.redirect_url);
+    if (payload.description) fd.append('description', payload.description);
+    if (payload.status) fd.append('status', payload.status);
+    if (payload.image) fd.append('image', payload.image);
+    else if (payload.image_url) fd.append('image_url', payload.image_url);
+
+    return this.http
+      .put<{
+        success: boolean;
+        ship: Ship;
+      }>(`${this.api}/${id}`, fd, { withCredentials: true })
+      .pipe(catchError((err) => throwError(() => err)));
+  }
 }

@@ -84,6 +84,25 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  // ── Edit ship ────────────────────────────────────────────────────────────
+  editShip(event: MouseEvent, ship: Ship): void {
+    event.stopPropagation();
+    const ref = this.dialog.open(AddShipModalComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      panelClass: this.darkMode() ? ['dtl-modal-dark'] : ['dtl-modal'],
+      data: { ship, isEdit: true }, // Pass ship data for editing
+    });
+    ref.afterClosed().subscribe((updatedShip) => {
+      if (updatedShip) {
+        this.ships.update((s) =>
+          s.map((x) => (x.id === updatedShip.id ? updatedShip : x))
+        );
+        this.showToast('Ship updated successfully!');
+      }
+    });
+  }
+
   // ── Open "Add Ship" modal ─────────────────────────────────────────────────
   openAddModal(): void {
     const ref = this.dialog.open(AddShipModalComponent, {

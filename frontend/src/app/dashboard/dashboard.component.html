@@ -91,15 +91,28 @@
                 {{ ship.status | titlecase }}
               </div>
 
-              <!-- Delete -->
-              <button
-                mat-icon-button
-                class="delete-btn"
-                (click)="deleteShip($event, ship.id)"
-                matTooltip="Delete Ship"
-              >
-                <mat-icon>delete_outline</mat-icon>
-              </button>
+              <!-- Action Buttons -->
+              <div class="card-actions">
+                <!-- Edit Button -->
+                <button
+                  mat-icon-button
+                  class="edit-btn"
+                  (click)="editShip($event, ship)"
+                  matTooltip="Edit Ship"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <!-- Delete Button -->
+                <button
+                  mat-icon-button
+                  class="delete-btn"
+                  (click)="deleteShip($event, ship.id)"
+                  matTooltip="Delete Ship"
+                >
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
             </div>
 
             <!-- Content -->
