@@ -48,7 +48,12 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ── Ship card click → launch transition → navigate ────────────────────────
+  // ── Computed fleet stats ───────────────────────────────────────────────
+  get activeCount():      number { return this.ships().filter(s => s.status === 'active').length; }
+  get maintenanceCount(): number { return this.ships().filter(s => s.status === 'maintenance').length; }
+  get inactiveCount():    number { return this.ships().filter(s => s.status === 'inactive').length; }
+
+  // ── Ship card click → launch transition → external viewer ──────────────
   openShip(ship: Ship): void {
     if (this.launchingId() !== null) return;
 
@@ -57,12 +62,10 @@ export class DashboardComponent implements OnInit {
 
     this.auth.generateShipToken(ship.id).subscribe({
       next: (res) => {
-        // Collect data for the launch screen
         this.launchingShipName = ship.name;
         this.launchingShipIcon = '🚢';
         this.launchTargetUrl   = res.ssoUrl;
 
-        // Slight delay so the ripple animation plays before fullscreen kicks in
         setTimeout(() => {
           this.showLaunchScreen.set(true);
           this.cdr.markForCheck();
@@ -76,24 +79,32 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // Called by <app-launch-transition> (launched) event just before redirect
+  // Called by <app-launch-transition> (launched) event — navigate to external viewer
   onLaunched(): void {
     this.showLaunchScreen.set(false);
     this.launchingId.set(null);
     this.cdr.markForCheck();
-  }
 
-  // ── Delete ────────────────────────────────────────────────────────────────
-  deleteShip(event: MouseEvent, id: number): void {
-    event.stopPropagation();
-    if (!confirm('Remove this vessel?')) return;
-    this.shipsService.deleteShip(id).subscribe({
-      next: () => { this.ships.update(s => s.filter(x => x.id !== id)); this.showToast('Vessel removed'); },
-      error: () => this.showToast('Failed to delete vessel', 'error'),
+    // Navigate to the ExternalViewerComponent with url + ship name as query params
+    this.router.navigate(['/external'], {
+      queryParams: {
+        url:  this.launchTargetUrl,
+        name: this.launchingShipName,
+      },
     });
   }
 
-  // ── Edit ──────────────────────────────────────────────────────────────────
+  // ── Delete ────────────────────────────────────────────────────────────
+  deleteShip(event: MouseEvent, id: number): void {
+    event.stopPropagation();
+    if (!confirm('Remove this vessel from the registry?')) return;
+    this.shipsService.deleteShip(id).subscribe({
+      next: () => { this.ships.update(s => s.filter(x => x.id !== id)); this.showToast('Vessel removed'); },
+      error: () => this.showToast('Failed to remove vessel', 'error'),
+    });
+  }
+
+  // ── Edit ──────────────────────────────────────────────────────────────
   editShip(event: MouseEvent, ship: Ship): void {
     event.stopPropagation();
     const ref = this.dialog.open(AddShipModalComponent, {
@@ -109,14 +120,14 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ── Add ───────────────────────────────────────────────────────────────────
+  // ── Add ───────────────────────────────────────────────────────────────
   openAddModal(): void {
     const ref = this.dialog.open(AddShipModalComponent, {
       width: '520px', maxWidth: '95vw',
       panelClass: this.darkMode() ? ['dtl-modal-dark'] : ['dtl-modal'],
     });
     ref.afterClosed().subscribe(ship => {
-      if (ship) { this.ships.update(s => [ship, ...s]); this.showToast('Vessel added!'); }
+      if (ship) { this.ships.update(s => [ship, ...s]); this.showToast('Vessel registered!'); }
     });
   }
 
@@ -131,7 +142,7 @@ export class DashboardComponent implements OnInit {
   }
 
   statusColor(status: string): string {
-    return ({ active: '#00c896', maintenance: '#f09820', inactive: '#d03030' }[status] || '#888');
+    return ({ active: '#00B87A', maintenance: '#E8880A', inactive: '#D93025' }[status] || '#888');
   }
 
   trackById(_: number, ship: Ship): number { return ship.id; }

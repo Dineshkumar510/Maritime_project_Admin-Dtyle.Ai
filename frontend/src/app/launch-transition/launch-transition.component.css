@@ -1,235 +1,363 @@
-/* ─── Launch Transition Screen ──────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   MARITIME OS — NAUTICAL COMMAND TRANSITION  v2.0
+   Sonar radar + nautical bridge terminal aesthetic
+   Deep navy background, amber/teal readout colours, sweep arm animation
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-.launch-screen {
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+/* ─── Screen wrapper ─────────────────────────────────────────────────────── */
+.nct-screen {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: #020917;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 32px;
+  gap: 40px;
+  background: #020D1A;
   overflow: hidden;
-  animation: fadeIn 0.3s ease;
+  animation: nctFadeIn 0.4s ease;
+}
+.nct-screen.nct-fade-out {
+  animation: nctFadeOut 0.6s ease forwards;
 }
 
-.launch-screen.fade-out {
-  animation: fadeOut 0.5s ease forwards;
-}
+@keyframes nctFadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes nctFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(1.04); } }
 
-/* ─── Background grid ─────────────────────────────────────────────────────── */
-.grid-bg {
+/* ─── Background ─────────────────────────────────────────────────────────── */
+.nct-bg {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(0, 120, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 120, 255, 0.07) 1px, transparent 1px);
-  background-size: 48px 48px;
-  animation: gridPan 12s linear infinite;
-}
-
-@keyframes gridPan {
-  0%   { background-position: 0 0; }
-  100% { background-position: 48px 48px; }
-}
-
-.scanline {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    rgba(0, 180, 255, 0.015) 3px,
-    rgba(0, 180, 255, 0.015) 4px
-  );
   pointer-events: none;
 }
 
-/* ─── Icon core ─────────────────────────────────────────────────────────────── */
-.launch-core {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.launch-core.expand {
-  transform: scale(1.15);
-}
-
-.icon-ring {
+.nct-bg-noise {
   position: absolute;
+  inset: 0;
+  /* Subtle dot-matrix grid */
+  background-image:
+    radial-gradient(circle, rgba(0, 180, 100, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  animation: bgDrift 20s linear infinite;
+}
+@keyframes bgDrift {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(28px, 28px); }
+}
+
+.nct-bg-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(2, 13, 26, 0.7) 100%
+  );
+}
+
+/* ─── Sonar display ──────────────────────────────────────────────────────── */
+.sonar-display {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  flex-shrink: 0;
+}
+
+/* Concentric rings */
+.sonar-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1.5px solid transparent;
-  animation: ringPulse 2.4s ease-in-out infinite;
+  border: 1px solid;
+}
+.sr-1 { width: 320px; height: 320px; border-color: rgba(0, 200, 100, 0.15); }
+.sr-2 { width: 240px; height: 240px; border-color: rgba(0, 200, 100, 0.22); }
+.sr-3 { width: 160px; height: 160px; border-color: rgba(0, 200, 100, 0.3);  }
+.sr-4 { width:  80px; height:  80px; border-color: rgba(0, 200, 100, 0.4);  }
+
+/* Cross-hairs */
+.sonar-cross {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  background: rgba(0, 200, 100, 0.12);
+}
+.sonar-cross--h {
+  width: 100%; height: 1px;
+  transform: translate(-50%, -50%);
+}
+.sonar-cross--v {
+  width: 1px; height: 100%;
+  transform: translate(-50%, -50%);
 }
 
-.icon-ring.outer {
-  width: 180px; height: 180px;
-  border-color: rgba(0, 140, 255, 0.25);
-  animation-delay: 0s;
-}
-.icon-ring.mid {
-  width: 148px; height: 148px;
-  border-color: rgba(0, 180, 255, 0.35);
-  animation-delay: -0.6s;
-}
-.icon-ring.inner {
-  width: 120px; height: 120px;
-  border-color: rgba(0, 220, 255, 0.5);
-  animation-delay: -1.2s;
+/* ─── Sweep arm ──────────────────────────────────────────────────────────── */
+.sonar-sweep {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 1px;
+  transform-origin: left center;
 }
 
-@keyframes ringPulse {
-  0%, 100% { opacity: 0.3; transform: scale(0.95); }
-  50%       { opacity: 1;   transform: scale(1.05); }
+.sweep-arm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0,220,110,0), rgba(0,220,110,0.9) 80%, #00FF88);
 }
 
-.icon-wrap {
-  width: 88px;
-  height: 88px;
-  background: linear-gradient(145deg, #0a1628, #0d2045);
-  border: 2px solid rgba(0, 180, 255, 0.6);
-  border-radius: 22px;
+.sweep-glow {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 80px;
+  transform: translateY(-50%);
+  background: conic-gradient(
+    from -30deg at 0% 50%,
+    rgba(0, 220, 110, 0) 0deg,
+    rgba(0, 220, 110, 0.12) 60deg,
+    rgba(0, 220, 110, 0) 90deg
+  );
+  pointer-events: none;
+  border-radius: 0 50% 50% 0;
+}
+
+/* ─── Compass marks ──────────────────────────────────────────────────────── */
+.compass-mark {
+  position: absolute;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(0, 200, 100, 0.6);
+  letter-spacing: 0.1em;
+}
+.cm-n { top: 4px;   left: 50%; transform: translateX(-50%); }
+.cm-s { bottom: 4px; left: 50%; transform: translateX(-50%); }
+.cm-e { right: 4px;  top: 50%;  transform: translateY(-50%); }
+.cm-w { left: 4px;   top: 50%;  transform: translateY(-50%); }
+
+/* ─── Center core ────────────────────────────────────────────────────────── */
+.sonar-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.4rem;
+}
+
+.core-inner {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(145deg, #061828, #0A2640);
+  border: 2px solid rgba(0, 200, 100, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
   box-shadow:
-    0 0 0 4px rgba(0, 180, 255, 0.08),
-    0 0 40px rgba(0, 120, 255, 0.4),
+    0 0 0 4px rgba(0, 200, 100, 0.08),
+    0 0 24px rgba(0, 200, 100, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  animation: iconGlow 2s ease-in-out infinite alternate;
+  animation: coreGlow 2s ease-in-out infinite alternate;
+  position: relative;
+  z-index: 2;
+}
+@keyframes coreGlow {
+  from { box-shadow: 0 0 18px rgba(0, 200, 100, 0.25), inset 0 1px 0 rgba(255,255,255,0.05); }
+  to   { box-shadow: 0 0 40px rgba(0, 220, 110, 0.55), inset 0 1px 0 rgba(255,255,255,0.05); }
 }
 
-@keyframes iconGlow {
-  from { box-shadow: 0 0 30px rgba(0, 120, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.05); }
-  to   { box-shadow: 0 0 60px rgba(0, 180, 255, 0.6), inset 0 1px 0 rgba(255,255,255,0.05); }
+.core-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 220, 110, 0.6);
+  animation: corePing 2.4s ease-out infinite;
+}
+@keyframes corePing {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
 }
 
-/* ─── Text ──────────────────────────────────────────────────────────────────── */
-.launch-text {
+/* ─── Text block ─────────────────────────────────────────────────────────── */
+.nct-text {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
-
-.launch-text.visible {
+.nct-text--visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-.launching-label {
+.nct-label {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #0af;
-}
-
-.dot {
-  width: 5px;
-  height: 5px;
-  background: #0af;
-  border-radius: 50%;
-  animation: blink 1.2s ease-in-out infinite;
-}
-.dot1 { animation-delay: 0s; }
-.dot2 { animation-delay: 0.2s; }
-.dot3 { animation-delay: 0.4s; }
-
-@keyframes blink {
-  0%, 100% { opacity: 0.2; transform: scale(0.8); }
-  50%       { opacity: 1;   transform: scale(1.2); }
-}
-
-.ship-name {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #fff;
-  margin: 0;
-  letter-spacing: -0.5px;
-  text-shadow: 0 0 30px rgba(0, 180, 255, 0.5);
-}
-
-.system-hint {
-  font-size: 0.85rem;
-  color: rgba(160, 210, 255, 0.6);
-  margin: 0;
-  font-family: 'Courier New', monospace;
-}
-
-/* ─── Progress bar ──────────────────────────────────────────────────────────── */
-.progress-bar-wrap {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: rgba(0, 200, 100, 0.75);
+  text-transform: uppercase;
+}
+.label-tick { color: #00DD88; animation: tickBlink 1s step-end infinite; }
+@keyframes tickBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+.nct-ship-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #F0F8FF;
+  margin: 0;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 0 0 30px rgba(0, 200, 100, 0.3);
+}
+
+/* Status log */
+.nct-log {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 60px;
+  width: 320px;
+}
+
+.log-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(0, 200, 100, 0.45);
+  letter-spacing: 0.04em;
+  animation: logReveal 0.3s ease;
+}
+.log-line--active {
+  color: rgba(0, 220, 110, 0.85);
+}
+
+@keyframes logReveal {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.log-chevron { color: #00DD88; opacity: 0.6; }
+.log-text    { flex: 1; }
+.log-cursor  {
+  color: #00FF88;
+  animation: cursorBlink 0.8s step-end infinite;
+}
+@keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ─── Progress ───────────────────────────────────────────────────────────── */
+.nct-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 320px;
   opacity: 0;
-  transition: opacity 0.5s ease 0.2s;
+  transition: opacity 0.5s ease 0.25s;
+}
+.nct-progress--visible { opacity: 1; }
+
+.nct-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.progress-bar-wrap.visible {
-  opacity: 1;
+.prog-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.63rem;
+  letter-spacing: 0.18em;
+  color: rgba(0, 200, 100, 0.55);
+  text-transform: uppercase;
 }
 
-.progress-track {
-  width: 280px;
-  height: 3px;
-  background: rgba(0, 140, 255, 0.15);
-  border-radius: 2px;
-  overflow: hidden;
+.prog-pct {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: #00DD88;
+  letter-spacing: 0.05em;
+}
+
+/* Segmented progress bar */
+.nct-progress-track {
   position: relative;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #005cbb, #00d4ff);
-  border-radius: 2px;
-  transition: width 0.1s linear;
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
-  position: relative;
-}
-
-.progress-fill::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: -3px;
-  width: 6px;
-  height: 9px;
-  background: rgba(0, 212, 255, 0.8);
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 100, 60, 0.2);
   border-radius: 3px;
-  filter: blur(2px);
+  overflow: hidden;
 }
 
-.progress-label {
-  font-family: 'Courier New', monospace;
-  font-size: 0.7rem;
-  color: rgba(0, 212, 255, 0.7);
+.nct-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #00884A, #00DD88);
+  border-radius: 3px;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 10px rgba(0, 220, 110, 0.6);
+}
+
+.prog-shimmer {
+  position: absolute;
+  top: 0;
+  right: -20px;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmerSlide 1.2s ease-in-out infinite;
+}
+@keyframes shimmerSlide {
+  0%   { transform: translateX(-30px); }
+  100% { transform: translateX(30px); }
+}
+
+.nct-progress-segments {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 3px;
+  pointer-events: none;
+}
+.prog-seg {
+  flex: 1;
+  border-right: 2px solid rgba(2, 13, 26, 0.6);
+}
+.prog-seg:last-child { border-right: none; }
+
+/* Coordinates readout */
+.nct-coords {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
   letter-spacing: 0.1em;
+  color: rgba(0, 180, 90, 0.45);
 }
-
-/* ─── Keyframes ─────────────────────────────────────────────────────────────── */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; transform: scale(1); }
-  to   { opacity: 0; transform: scale(1.05); }
-}
+.coord-sep { opacity: 0.35; }

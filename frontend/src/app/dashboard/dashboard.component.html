@@ -1,124 +1,199 @@
-<div class="dashboard-wrapper" [class.dark-theme]="darkMode()">
+<div class="mcc-wrap" [class.dark]="darkMode()">
 
-  <!-- Header -->
-  <header class="topbar">
+  <!-- ══ TOPBAR ══════════════════════════════════════════════════════════════ -->
+  <header class="mcc-header">
     <div class="brand">
-      <span class="brand-icon">⚓</span>
-      <div class="brand-text">
-        <h1>Maritime<span class="brand-accent">OS</span></h1>
-        <span class="brand-sub">Fleet Control Center</span>
+      <div class="brand-emblem">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+          <circle cx="20" cy="20" r="12" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+          <path d="M20 8 L20 32 M8 20 L32 20" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+          <circle cx="20" cy="20" r="3" fill="currentColor"/>
+          <path d="M14 26 C14 26 17 22 20 22 C23 22 26 26 26 26 L20 30 Z" fill="currentColor" opacity="0.8"/>
+          <rect x="19" y="10" width="2" height="12" fill="currentColor" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="brand-info">
+        <span class="brand-name">Maritime<em>OS</em></span>
+        <span class="brand-tagline">Fleet Command Center</span>
       </div>
     </div>
-    <div class="actions">
-      <button mat-icon-button (click)="toggleDark()" matTooltip="Toggle Dark Mode">
+
+    <div class="fleet-stats" *ngIf="!loading() && ships().length > 0">
+      <div class="fstat fstat--total">
+        <span class="fstat-val">{{ ships().length }}</span>
+        <span class="fstat-lbl">Total</span>
+      </div>
+      <div class="fstat-divider"></div>
+      <div class="fstat fstat--active">
+        <span class="fstat-dot"></span>
+        <span class="fstat-val">{{ activeCount }}</span>
+        <span class="fstat-lbl">Active</span>
+      </div>
+      <div class="fstat fstat--maint">
+        <span class="fstat-dot"></span>
+        <span class="fstat-val">{{ maintenanceCount }}</span>
+        <span class="fstat-lbl">Maint.</span>
+      </div>
+      <div class="fstat fstat--inactive">
+        <span class="fstat-dot"></span>
+        <span class="fstat-val">{{ inactiveCount }}</span>
+        <span class="fstat-lbl">Offline</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="hdr-btn" (click)="toggleDark()" [matTooltip]="darkMode() ? 'Light Mode' : 'Dark Mode'">
         <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
-      <button mat-icon-button (click)="logout()" matTooltip="Logout">
+      <button class="hdr-btn hdr-btn--logout" (click)="logout()" matTooltip="Logout">
         <mat-icon>logout</mat-icon>
       </button>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="content">
-    <div class="page-header">
-      <div>
-        <h2>Your Fleet</h2>
-        <p class="page-sub">Select a vessel to launch its management system</p>
+  <!-- ══ MAIN ════════════════════════════════════════════════════════════════ -->
+  <main class="mcc-main">
+
+    <!-- Section header -->
+    <div class="section-header">
+      <div class="section-title-block">
+        <div class="section-label">FLEET REGISTRY</div>
+        <h2 class="section-title">Your Vessels</h2>
+        <p class="section-sub">Select a vessel to launch its management console</p>
       </div>
-      <button mat-flat-button color="primary" (click)="openAddModal()" class="add-btn">
-        <mat-icon>add</mat-icon> Add Vessel
+      <button class="add-btn" (click)="openAddModal()">
+        <mat-icon>add</mat-icon>
+        <span>Register Vessel</span>
       </button>
     </div>
 
-    <!-- LOADING STATE -->
+    <!-- ── LOADING STATE ─────────────────────────────────────────────────── -->
     <ng-container *ngIf="loading(); else notLoading">
-      <div class="ships-grid">
-        <div *ngFor="let skeleton of skeletons" class="app-icon-card skeleton-card">
-          <div class="skeleton-icon"></div>
-          <div class="skeleton-text"></div>
-          <div class="skeleton-text-sm"></div>
+      <div class="vessel-grid">
+        <div *ngFor="let s of skeletons" class="vessel-card vessel-card--skeleton">
+          <div class="sk-img"></div>
+          <div class="sk-body">
+            <div class="sk-badge"></div>
+            <div class="sk-line sk-name"></div>
+            <div class="sk-line sk-meta"></div>
+          </div>
         </div>
       </div>
     </ng-container>
 
-    <!-- NOT LOADING -->
+    <!-- ── LOADED STATE ──────────────────────────────────────────────────── -->
     <ng-template #notLoading>
+
+      <!-- Empty state -->
       <ng-container *ngIf="ships().length === 0; else hasShips">
-        <div class="empty-state">
-          <div class="empty-icon">⚓</div>
-          <h3>No Vessels in Fleet</h3>
-          <p>Add your first vessel to get started.</p>
-          <button mat-flat-button color="primary" (click)="openAddModal()">
-            Add Your First Vessel
+        <div class="fleet-empty">
+          <div class="empty-compass">
+            <div class="ec-ring ec-ring--outer"></div>
+            <div class="ec-ring ec-ring--mid"></div>
+            <div class="ec-ring ec-ring--inner"></div>
+            <div class="ec-center">⚓</div>
+          </div>
+          <h3>No Vessels in Registry</h3>
+          <p>Register your first vessel to start managing your fleet.</p>
+          <button class="add-btn" (click)="openAddModal()">
+            <mat-icon>add</mat-icon> Register First Vessel
           </button>
         </div>
       </ng-container>
 
+      <!-- Vessel grid -->
       <ng-template #hasShips>
-        <div class="ships-grid">
+        <div class="vessel-grid">
           <div
             *ngFor="let ship of ships(); trackBy: trackById"
-            class="app-icon-card"
-            [class.launching]="launchingId() === ship.id"
+            class="vessel-card"
+            [class.vessel-card--launching]="launchingId() === ship.id"
             (click)="openShip(ship)"
-            [attr.aria-label]="'Launch ' + ship.name"
             role="button"
             tabindex="0"
+            [attr.aria-label]="'Launch ' + ship.name"
             (keydown.enter)="openShip(ship)"
           >
-            <div class="card-glow-ring"></div>
-
-            <div class="card-actions" (click)="$event.stopPropagation()">
-              <button mat-icon-button class="action-btn edit-btn"
-                (click)="editShip($event, ship)" matTooltip="Edit Vessel">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button class="action-btn delete-btn"
-                (click)="deleteShip($event, ship.id)" matTooltip="Remove Vessel">
-                <mat-icon>delete_outline</mat-icon>
-              </button>
-            </div>
-
-            <div class="icon-frame">
+            <!-- ─ Image zone ─ -->
+            <div class="vc-img-zone">
               <img
                 [src]="ship.image_url || 'assets/default-ship.jpg'"
                 [alt]="ship.name"
-                (error)="img.src = 'assets/default-ship.jpg'"
+                (error)="img.src='assets/default-ship.jpg'"
                 #img
-                class="icon-img"
+                class="vc-img"
               />
-              <div class="status-dot" [style.background]="statusColor(ship.status)"
-                   [matTooltip]="ship.status | titlecase"></div>
+              <div class="vc-img-gradient"></div>
+
+              <!-- Status pill (top-left) -->
+              <div class="vc-status" [class]="'vc-status--' + ship.status">
+                <span class="vc-status-dot"></span>
+                {{ ship.status | titlecase }}
+              </div>
+
+              <!-- Actions (top-right, appear on hover) -->
+              <div class="vc-actions" (click)="$event.stopPropagation()">
+                <button class="vca-btn vca-btn--edit" (click)="editShip($event, ship)" matTooltip="Edit Vessel">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="vca-btn vca-btn--delete" (click)="deleteShip($event, ship.id)" matTooltip="Remove Vessel">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+
+              <!-- Launching overlay -->
+              <div class="vc-launching-overlay" *ngIf="launchingId() === ship.id">
+                <div class="vlo-pulse p1"></div>
+                <div class="vlo-pulse p2"></div>
+                <div class="vlo-pulse p3"></div>
+                <div class="vlo-label">
+                  <mat-icon>rocket_launch</mat-icon>
+                  <span>Launching…</span>
+                </div>
+              </div>
             </div>
 
-            <div class="icon-label">
-              <span class="icon-name">{{ ship.name }}</span>
-              <span class="icon-meta">{{ ship.status | titlecase }}</span>
+            <!-- ─ Card body ─ -->
+            <div class="vc-body">
+              <div class="vc-body-left">
+                <h3 class="vc-name">{{ ship.name }}</h3>
+                <div class="vc-coords">
+                  <mat-icon class="coord-icon">anchor</mat-icon>
+                  <span>Maritime Vessel</span>
+                </div>
+              </div>
+              <div class="vc-launch-cue">
+                <div class="vlc-inner">
+                  <mat-icon>arrow_forward</mat-icon>
+                </div>
+              </div>
             </div>
 
-            <div class="launch-ripple" *ngIf="launchingId() === ship.id">
-              <div class="ripple r1"></div>
-              <div class="ripple r2"></div>
-              <div class="ripple r3"></div>
-              <span class="launch-hint">Launching…</span>
-            </div>
+            <!-- Hover scan line -->
+            <div class="vc-scanline"></div>
           </div>
         </div>
       </ng-template>
     </ng-template>
   </main>
 
-  <footer class="footer">
-    <p>&copy; {{ year }} Dtyle Maritime Systems. All rights reserved.</p>
+  <!-- ══ FOOTER ══════════════════════════════════════════════════════════════ -->
+  <footer class="mcc-footer">
+    <span>&copy; {{ year }} Dtyle Maritime Systems</span>
+    <span class="footer-dot">·</span>
+    <span>All rights reserved</span>
   </footer>
 
-  <div *ngIf="toast()" class="toast-container" [ngClass]="toastType()">
-    <mat-icon>{{ toastType() === 'success' ? 'check_circle' : 'error' }}</mat-icon>
+  <!-- ══ TOAST ═══════════════════════════════════════════════════════════════ -->
+  <div *ngIf="toast()" class="mcc-toast" [class.mcc-toast--error]="toastType() === 'error'">
+    <mat-icon>{{ toastType() === 'success' ? 'check_circle' : 'error_outline' }}</mat-icon>
     <span>{{ toast() }}</span>
   </div>
+
 </div>
 
+<!-- ══ LAUNCH TRANSITION (portal) ════════════════════════════════════════════ -->
 <app-launch-transition
   *ngIf="showLaunchScreen()"
   [shipName]="launchingShipName"

@@ -1,42 +1,93 @@
-<!-- Full-screen launch transition overlay -->
-<div class="launch-screen" [ngClass]="{ 'fade-out': isFadingOut }">
+<!-- Nautical Command Transition Screen -->
+<div class="nct-screen" [class.nct-fade-out]="isFadingOut">
 
-  <!-- Animated grid background -->
-  <div class="grid-bg"></div>
-  <div class="scanline"></div>
+  <!-- Deep sea background layers -->
+  <div class="nct-bg">
+    <div class="nct-bg-noise"></div>
+    <div class="nct-bg-vignette"></div>
+  </div>
 
-  <!-- App icon expanding animation -->
-  <div class="launch-core" [ngClass]="{ 'expand': isExpanding }">
+  <!-- ── Sonar radar display ─────────────────────────────────────────── -->
+  <div class="sonar-display">
 
-    <!-- Icon ring -->
-    <div class="icon-ring outer"></div>
-    <div class="icon-ring mid"></div>
-    <div class="icon-ring inner"></div>
+    <!-- Outer ring grid markings -->
+    <div class="sonar-ring sr-1"></div>
+    <div class="sonar-ring sr-2"></div>
+    <div class="sonar-ring sr-3"></div>
+    <div class="sonar-ring sr-4"></div>
 
-    <!-- Main icon -->
-    <div class="icon-wrap">
-      <span class="app-icon">{{ shipIcon }}</span>
+    <!-- Cross-hairs -->
+    <div class="sonar-cross sonar-cross--h"></div>
+    <div class="sonar-cross sonar-cross--v"></div>
+
+    <!-- Rotating sweep arm -->
+    <div class="sonar-sweep" [style.transform]="'rotate(' + sweepAngle + 'deg)'">
+      <div class="sweep-arm"></div>
+      <div class="sweep-glow"></div>
+    </div>
+
+    <!-- Compass rose cardinal marks -->
+    <div class="compass-mark cm-n"><span>N</span></div>
+    <div class="compass-mark cm-e"><span>E</span></div>
+    <div class="compass-mark cm-s"><span>S</span></div>
+    <div class="compass-mark cm-w"><span>W</span></div>
+
+    <!-- Center core -->
+    <div class="sonar-core">
+      <div class="core-inner">
+        <span class="core-icon">{{ shipIcon }}</span>
+      </div>
+      <div class="core-ping"></div>
     </div>
   </div>
 
-  <!-- Text content -->
-  <div class="launch-text" [ngClass]="{ 'visible': showText }">
-    <div class="launching-label">
-      <span class="dot dot1"></span>
-      <span class="dot dot2"></span>
-      <span class="dot dot3"></span>
-      Launching System
+  <!-- ── Text block ─────────────────────────────────────────────────── -->
+  <div class="nct-text" [class.nct-text--visible]="showText">
+
+    <div class="nct-label">
+      <span class="label-tick">▶</span>
+      <span>HELM CONSOLE INITIALIZING</span>
     </div>
-    <h2 class="ship-name">{{ shipName }}</h2>
-    <p class="system-hint">Initializing secure session...</p>
+
+    <h2 class="nct-ship-name">{{ shipName }}</h2>
+
+    <!-- Status log messages -->
+    <div class="nct-log">
+      <div *ngFor="let msg of visibleMessages; let i = index"
+           class="log-line"
+           [class.log-line--active]="i === visibleMessages.length - 1">
+        <span class="log-chevron">›</span>
+        <span class="log-text">{{ msg }}</span>
+        <span class="log-cursor" *ngIf="i === visibleMessages.length - 1">_</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Progress bar -->
-  <div class="progress-bar-wrap" [ngClass]="{ 'visible': showText }">
-    <div class="progress-track">
-      <div class="progress-fill" [style.width.%]="progress"></div>
+  <!-- ── Progress ───────────────────────────────────────────────────── -->
+  <div class="nct-progress" [class.nct-progress--visible]="showText">
+
+    <div class="nct-progress-header">
+      <span class="prog-label">SIGNAL LOCK</span>
+      <span class="prog-pct">{{ progress }}%</span>
     </div>
-    <span class="progress-label">{{ progress }}%</span>
+
+    <div class="nct-progress-track">
+      <div class="nct-progress-fill" [style.width.%]="progress">
+        <div class="prog-shimmer"></div>
+      </div>
+      <div class="nct-progress-segments">
+        <div *ngFor="let seg of progressSegments" class="prog-seg"
+             [class.prog-seg--lit]="progress >= seg"></div>
+      </div>
+    </div>
+
+    <div class="nct-coords">
+      <span>LAT {{ coordLat }}°N</span>
+      <span class="coord-sep">|</span>
+      <span>LON {{ coordLon }}°E</span>
+      <span class="coord-sep">|</span>
+      <span>SECURE CHANNEL ACTIVE</span>
+    </div>
   </div>
 
 </div>
