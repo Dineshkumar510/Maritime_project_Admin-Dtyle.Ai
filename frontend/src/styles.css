@@ -23,3 +23,12 @@ body {
 h1, h2, h3, h4, h5 {
   font-family: 'Syne', sans-serif;
 }
+
+.mat-mdc-dialog-surface,
+.mdc-dialog__surface {
+  border-radius: 4% !important;
+  -webkit-border-radius: 4% !important;
+  -moz-border-radius: 4% !important;
+  -ms-border-radius: 4% !important;
+  -o-border-radius: 4% !important;
+}

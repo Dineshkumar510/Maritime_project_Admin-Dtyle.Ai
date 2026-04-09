@@ -1,13 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   MARITIME OS — NAUTICAL COMMAND TRANSITION  v2.0
-   Sonar radar + nautical bridge terminal aesthetic
-   Deep navy background, amber/teal readout colours, sweep arm animation
+   MARITIME OS — PROFESSIONAL SECURE CONNECTION INTERFACE
+   Enterprise-grade minimal design with subtle animations
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ─── Screen wrapper ─────────────────────────────────────────────────────── */
-.nct-screen {
+.launch-screen {
   position: fixed;
   inset: 0;
   z-index: 9999;
@@ -15,349 +14,302 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 40px;
-  background: #020D1A;
+  background: linear-gradient(135deg, #0A1628 0%, #060e1f 100%);
   overflow: hidden;
-  animation: nctFadeIn 0.4s ease;
-}
-.nct-screen.nct-fade-out {
-  animation: nctFadeOut 0.6s ease forwards;
+  animation: fadeIn 0.3s ease;
 }
 
-@keyframes nctFadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes nctFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(1.04); } }
+.launch-screen.fade-out {
+  animation: fadeOut 0.4s ease forwards;
+}
 
-/* ─── Background ─────────────────────────────────────────────────────────── */
-.nct-bg {
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
+/* ─── Subtle background grid ─────────────────────────────────────────────── */
+.launch-bg {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-}
-
-.nct-bg-noise {
-  position: absolute;
-  inset: 0;
-  /* Subtle dot-matrix grid */
+  opacity: 0.4;
   background-image:
-    radial-gradient(circle, rgba(0, 180, 100, 0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
-  animation: bgDrift 20s linear infinite;
-}
-@keyframes bgDrift {
-  0%   { transform: translate(0, 0); }
-  100% { transform: translate(28px, 28px); }
+    linear-gradient(rgba(0, 160, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 160, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridDrift 30s linear infinite;
 }
 
-.nct-bg-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 40%,
-    rgba(2, 13, 26, 0.7) 100%
-  );
+@keyframes gridDrift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(40px, 40px); }
 }
 
-/* ─── Sonar display ──────────────────────────────────────────────────────── */
-.sonar-display {
-  position: relative;
-  width: 320px;
-  height: 320px;
-  flex-shrink: 0;
-}
-
-/* Concentric rings */
-.sonar-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 1px solid;
-}
-.sr-1 { width: 320px; height: 320px; border-color: rgba(0, 200, 100, 0.15); }
-.sr-2 { width: 240px; height: 240px; border-color: rgba(0, 200, 100, 0.22); }
-.sr-3 { width: 160px; height: 160px; border-color: rgba(0, 200, 100, 0.3);  }
-.sr-4 { width:  80px; height:  80px; border-color: rgba(0, 200, 100, 0.4);  }
-
-/* Cross-hairs */
-.sonar-cross {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-origin: center;
-  background: rgba(0, 200, 100, 0.12);
-}
-.sonar-cross--h {
-  width: 100%; height: 1px;
-  transform: translate(-50%, -50%);
-}
-.sonar-cross--v {
-  width: 1px; height: 100%;
-  transform: translate(-50%, -50%);
-}
-
-/* ─── Sweep arm ──────────────────────────────────────────────────────────── */
-.sonar-sweep {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 50%;
-  height: 1px;
-  transform-origin: left center;
-}
-
-.sweep-arm {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(0,220,110,0), rgba(0,220,110,0.9) 80%, #00FF88);
-}
-
-.sweep-glow {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 80px;
-  transform: translateY(-50%);
-  background: conic-gradient(
-    from -30deg at 0% 50%,
-    rgba(0, 220, 110, 0) 0deg,
-    rgba(0, 220, 110, 0.12) 60deg,
-    rgba(0, 220, 110, 0) 90deg
-  );
-  pointer-events: none;
-  border-radius: 0 50% 50% 0;
-}
-
-/* ─── Compass marks ──────────────────────────────────────────────────────── */
-.compass-mark {
-  position: absolute;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.7rem;
-  color: rgba(0, 200, 100, 0.6);
-  letter-spacing: 0.1em;
-}
-.cm-n { top: 4px;   left: 50%; transform: translateX(-50%); }
-.cm-s { bottom: 4px; left: 50%; transform: translateX(-50%); }
-.cm-e { right: 4px;  top: 50%;  transform: translateY(-50%); }
-.cm-w { left: 4px;   top: 50%;  transform: translateY(-50%); }
-
-/* ─── Center core ────────────────────────────────────────────────────────── */
-.sonar-core {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.core-inner {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(145deg, #061828, #0A2640);
-  border: 2px solid rgba(0, 200, 100, 0.5);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  box-shadow:
-    0 0 0 4px rgba(0, 200, 100, 0.08),
-    0 0 24px rgba(0, 200, 100, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  animation: coreGlow 2s ease-in-out infinite alternate;
+/* ─── Main container ─────────────────────────────────────────────────────── */
+.launch-container {
   position: relative;
   z-index: 2;
-}
-@keyframes coreGlow {
-  from { box-shadow: 0 0 18px rgba(0, 200, 100, 0.25), inset 0 1px 0 rgba(255,255,255,0.05); }
-  to   { box-shadow: 0 0 40px rgba(0, 220, 110, 0.55), inset 0 1px 0 rgba(255,255,255,0.05); }
-}
-
-.core-ping {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid rgba(0, 220, 110, 0.6);
-  animation: corePing 2.4s ease-out infinite;
-}
-@keyframes corePing {
-  0%   { transform: scale(1);   opacity: 0.8; }
-  100% { transform: scale(2.2); opacity: 0; }
-}
-
-/* ─── Text block ─────────────────────────────────────────────────────────── */
-.nct-text {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 48px;
+  max-width: 560px;
+  width: 100%;
+  padding: 0 24px;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.nct-text--visible {
-  opacity: 1;
-  transform: translateY(0);
+  animation: containerReveal 0.6s ease 0.2s forwards;
 }
 
-.nct-label {
+@keyframes containerReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Brand section ──────────────────────────────────────────────────────── */
+.launch-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.launch-logo {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 160, 220, 0.08) 100%);
+  border: 2px solid rgba(0, 200, 255, 0.25);
+  border-radius: 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.22em;
-  color: rgba(0, 200, 100, 0.75);
+  justify-content: center;
+  font-size: 28px;
+  box-shadow:
+    0 8px 32px rgba(0, 212, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(0, 212, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 8px 40px rgba(0, 212, 255, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+.launch-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(0, 200, 255, 0.7);
   text-transform: uppercase;
-}
-.label-tick { color: #00DD88; animation: tickBlink 1s step-end infinite; }
-@keyframes tickBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-.nct-ship-name {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #F0F8FF;
-  margin: 0;
-  letter-spacing: 0.02em;
-  text-align: center;
-  text-shadow: 0 0 30px rgba(0, 200, 100, 0.3);
+  letter-spacing: 0.15em;
 }
 
-/* Status log */
-.nct-log {
+/* ─── Vessel section ─────────────────────────────────────────────────────── */
+.launch-vessel {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-height: 60px;
-  width: 320px;
-}
-
-.log-line {
-  display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.72rem;
-  color: rgba(0, 200, 100, 0.45);
-  letter-spacing: 0.04em;
-  animation: logReveal 0.3s ease;
-}
-.log-line--active {
-  color: rgba(0, 220, 110, 0.85);
 }
 
-@keyframes logReveal {
-  from { opacity: 0; transform: translateX(-8px); }
-  to   { opacity: 1; transform: translateX(0); }
+.launch-vessel-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #e2eaf8;
+  margin: 0;
+  text-align: center;
+  letter-spacing: -0.02em;
 }
 
-.log-chevron { color: #00DD88; opacity: 0.6; }
-.log-text    { flex: 1; }
-.log-cursor  {
-  color: #00FF88;
-  animation: cursorBlink 0.8s step-end infinite;
+.launch-vessel-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(180, 210, 255, 0.5);
+  margin: 0;
 }
-@keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-/* ─── Progress ───────────────────────────────────────────────────────────── */
-.nct-progress {
+/* ─── Status section ─────────────────────────────────────────────────────── */
+.launch-status {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: 320px;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.25s;
+  gap: 24px;
 }
-.nct-progress--visible { opacity: 1; }
 
-.nct-progress-header {
+/* Progress bar */
+.launch-progress {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.progress-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.prog-label {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.63rem;
-  letter-spacing: 0.18em;
-  color: rgba(0, 200, 100, 0.55);
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(180, 210, 255, 0.6);
   text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.prog-pct {
-  font-family: 'Share Tech Mono', monospace;
+.progress-value {
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
-  color: #00DD88;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: rgba(0, 212, 255, 0.9);
 }
 
-/* Segmented progress bar */
-.nct-progress-track {
+.progress-track {
   position: relative;
   width: 100%;
-  height: 6px;
-  background: rgba(0, 100, 60, 0.2);
-  border-radius: 3px;
+  height: 4px;
+  background: rgba(0, 160, 255, 0.1);
+  border-radius: 2px;
   overflow: hidden;
 }
 
-.nct-progress-fill {
+.progress-fill {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  background: linear-gradient(90deg, #00884A, #00DD88);
-  border-radius: 3px;
-  transition: width 0.1s linear;
-  box-shadow: 0 0 10px rgba(0, 220, 110, 0.6);
+  background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 100%);
+  border-radius: 2px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
 }
 
-.prog-shimmer {
-  position: absolute;
-  top: 0;
-  right: -20px;
-  width: 40px;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation: shimmerSlide 1.2s ease-in-out infinite;
-}
-@keyframes shimmerSlide {
-  0%   { transform: translateX(-30px); }
-  100% { transform: translateX(30px); }
-}
-
-.nct-progress-segments {
-  position: absolute;
-  inset: 0;
+/* Status messages */
+.launch-messages {
   display: flex;
-  gap: 3px;
-  pointer-events: none;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 100px;
 }
-.prog-seg {
-  flex: 1;
-  border-right: 2px solid rgba(2, 13, 26, 0.6);
-}
-.prog-seg:last-child { border-right: none; }
 
-/* Coordinates readout */
-.nct-coords {
+.status-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(0, 160, 255, 0.08);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8125rem;
+  color: rgba(180, 210, 255, 0.7);
+  opacity: 0;
+  transform: translateX(-8px);
+  animation: messageReveal 0.4s ease forwards;
+}
+
+@keyframes messageReveal {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.status-message.active {
+  color: rgba(0, 212, 255, 0.95);
+  border-color: rgba(0, 212, 255, 0.2);
+  background: rgba(0, 212, 255, 0.04);
+}
+
+.message-icon {
+  flex-shrink: 0;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: rgba(0, 212, 255, 0.6);
+}
+
+.status-message.active .message-icon {
+  color: rgba(0, 212, 255, 0.9);
+  animation: iconSpin 1s linear infinite;
+}
+
+@keyframes iconSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.message-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.message-check {
+  flex-shrink: 0;
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: #22c55e;
+  opacity: 0;
+}
+
+.status-message.complete .message-check {
+  opacity: 1;
+  animation: checkReveal 0.3s ease;
+}
+
+@keyframes checkReveal {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+/* ─── Security footer ────────────────────────────────────────────────────── */
+.launch-footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  color: rgba(0, 180, 90, 0.45);
+  gap: 8px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 160, 255, 0.08);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(120, 160, 210, 0.45);
+  letter-spacing: 0.05em;
 }
-.coord-sep { opacity: 0.35; }
+
+.footer-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  color: #22c55e;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .launch-container {
+    gap: 36px;
+  }
+
+  .launch-vessel-name {
+    font-size: 1.5rem;
+  }
+
+  .launch-status {
+    gap: 20px;
+  }
+}

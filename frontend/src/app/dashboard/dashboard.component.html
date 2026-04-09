@@ -3,11 +3,10 @@
   <header class="mcc-header">
     <div class="brand">
       <div class="brand-emblem">
-          <img src="../../assets/D-logo.png" alt="Dtlye.AI">
+        <img src="../../assets/D-logo.png" alt="Dtyle.AI">
       </div>
       <div class="brand-info">
-        <!-- <span class="brand-name">Maritime<em>OS</em></span> -->
-         <span class="brand-name">Maritime</span>
+        <span class="brand-name">Maritime</span>
         <span class="brand-tagline">Fleet Command Center</span>
       </div>
     </div>
@@ -23,7 +22,7 @@
         <span class="fstat-val">{{ activeCount }}</span>
         <span class="fstat-lbl">Active</span>
       </div>
-      <div class="fstat fstat--maint">
+      <div class="fstat--maint fstat">
         <span class="fstat-dot"></span>
         <span class="fstat-val">{{ maintenanceCount }}</span>
         <span class="fstat-lbl">Maint.</span>
@@ -58,6 +57,7 @@
       </button>
     </div>
 
+    <!-- ── Loading skeletons ── -->
     <ng-container *ngIf="loading(); else notLoading">
       <div class="vessel-grid">
         <div *ngFor="let s of skeletons" class="vessel-card vessel-card--skeleton">
@@ -94,11 +94,6 @@
             *ngFor="let ship of ships(); trackBy: trackById"
             class="vessel-card"
             [class.vessel-card--launching]="launchingId() === ship.id"
-            (click)="openShip(ship)"
-            role="button"
-            tabindex="0"
-            [attr.aria-label]="'Launch ' + ship.name"
-            (keydown.enter)="openShip(ship)"
           >
             <!-- ─ Image zone ─ -->
             <div class="vc-img-zone">
@@ -111,11 +106,14 @@
               />
               <div class="vc-img-gradient"></div>
 
-              <div class="vc-status" [class]="'vc-status--' + ship.status">
+              <!-- Status badge — redesigned -->
+              <div class="vc-status" [ngClass]="'vc-status--' + ship.status">
                 <span class="vc-status-dot"></span>
-                {{ ship.status | titlecase }}
+                <span class="vc-status-label">{{ ship.status | titlecase }}</span>
+                <span class="vc-status-ring" *ngIf="ship.status === 'active'"></span>
               </div>
 
+              <!-- Edit / Delete actions -->
               <div class="vc-actions" (click)="$event.stopPropagation()">
                 <button class="vca-btn vca-btn--edit" (click)="editShip($event, ship)" matTooltip="Edit Vessel">
                   <mat-icon>edit</mat-icon>
@@ -125,6 +123,7 @@
                 </button>
               </div>
 
+              <!-- Launching overlay -->
               <div class="vc-launching-overlay" *ngIf="launchingId() === ship.id">
                 <div class="vlo-pulse p1"></div>
                 <div class="vlo-pulse p2"></div>
@@ -145,11 +144,19 @@
                   <span>Maritime Vessel</span>
                 </div>
               </div>
-              <div class="vc-launch-cue">
-                <div class="vlc-inner">
-                  <mat-icon>arrow_forward</mat-icon>
-                </div>
-              </div>
+
+              <!-- Connect button (replaces click-on-card) -->
+              <button
+                class="vc-connect-btn"
+                [class.vc-connect-btn--maintenance]="ship.status === 'maintenance'"
+                [class.vc-connect-btn--inactive]="ship.status === 'inactive'"
+                (click)="openShip(ship)"
+                [disabled]="launchingId() !== null"
+                [matTooltip]="ship.status !== 'active' ? 'Vessel is ' + ship.status : 'Connect to vessel'"
+              >
+                <mat-icon>{{ ship.status === 'active' ? 'sensors' : ship.status === 'maintenance' ? 'build' : 'power_off' }}</mat-icon>
+                <span>{{ ship.status === 'active' ? 'Connect' : ship.status === 'maintenance' ? 'Maintain' : 'Offline' }}</span>
+              </button>
             </div>
 
             <!-- Hover scan line -->

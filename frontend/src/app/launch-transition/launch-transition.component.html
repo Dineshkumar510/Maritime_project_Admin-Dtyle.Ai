@@ -1,93 +1,61 @@
-<!-- Nautical Command Transition Screen -->
-<div class="nct-screen" [class.nct-fade-out]="isFadingOut">
+<div class="launch-screen" [class.fade-out]="isFadingOut">
 
-  <!-- Deep sea background layers -->
-  <div class="nct-bg">
-    <div class="nct-bg-noise"></div>
-    <div class="nct-bg-vignette"></div>
-  </div>
+  <!-- Subtle background grid -->
+  <div class="launch-bg"></div>
 
-  <!-- ── Sonar radar display ─────────────────────────────────────────── -->
-  <div class="sonar-display">
+  <!-- Main container -->
+  <div class="launch-container">
 
-    <!-- Outer ring grid markings -->
-    <div class="sonar-ring sr-1"></div>
-    <div class="sonar-ring sr-2"></div>
-    <div class="sonar-ring sr-3"></div>
-    <div class="sonar-ring sr-4"></div>
-
-    <!-- Cross-hairs -->
-    <div class="sonar-cross sonar-cross--h"></div>
-    <div class="sonar-cross sonar-cross--v"></div>
-
-    <!-- Rotating sweep arm -->
-    <div class="sonar-sweep" [style.transform]="'rotate(' + sweepAngle + 'deg)'">
-      <div class="sweep-arm"></div>
-      <div class="sweep-glow"></div>
-    </div>
-
-    <!-- Compass rose cardinal marks -->
-    <div class="compass-mark cm-n"><span>N</span></div>
-    <div class="compass-mark cm-e"><span>E</span></div>
-    <div class="compass-mark cm-s"><span>S</span></div>
-    <div class="compass-mark cm-w"><span>W</span></div>
-
-    <!-- Center core -->
-    <div class="sonar-core">
-      <div class="core-inner">
-        <span class="core-icon">{{ shipIcon }}</span>
+    <!-- Brand -->
+    <div class="launch-brand">
+      <div class="launch-logo">
+        <span>{{ shipIcon }}</span>
       </div>
-      <div class="core-ping"></div>
-    </div>
-  </div>
-
-  <!-- ── Text block ─────────────────────────────────────────────────── -->
-  <div class="nct-text" [class.nct-text--visible]="showText">
-
-    <div class="nct-label">
-      <span class="label-tick">▶</span>
-      <span>HELM CONSOLE INITIALIZING</span>
+      <div class="launch-label">Dtyle.AI Maritime</div>
     </div>
 
-    <h2 class="nct-ship-name">{{ shipName }}</h2>
+    <!-- Vessel info -->
+    <div class="launch-vessel">
+      <h2 class="launch-vessel-name">{{ shipName }}</h2>
+      <p class="launch-vessel-subtitle">Establishing secure connection</p>
+    </div>
 
-    <!-- Status log messages -->
-    <div class="nct-log">
-      <div *ngFor="let msg of visibleMessages; let i = index"
-           class="log-line"
-           [class.log-line--active]="i === visibleMessages.length - 1">
-        <span class="log-chevron">›</span>
-        <span class="log-text">{{ msg }}</span>
-        <span class="log-cursor" *ngIf="i === visibleMessages.length - 1">_</span>
+    <!-- Status section -->
+    <div class="launch-status">
+
+      <!-- Progress bar -->
+      <div class="launch-progress">
+        <div class="progress-header">
+          <span class="progress-label">Connection Progress</span>
+          <span class="progress-value">{{ progress }}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="progress"></div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- ── Progress ───────────────────────────────────────────────────── -->
-  <div class="nct-progress" [class.nct-progress--visible]="showText">
-
-    <div class="nct-progress-header">
-      <span class="prog-label">SIGNAL LOCK</span>
-      <span class="prog-pct">{{ progress }}%</span>
-    </div>
-
-    <div class="nct-progress-track">
-      <div class="nct-progress-fill" [style.width.%]="progress">
-        <div class="prog-shimmer"></div>
+      <!-- Status messages -->
+      <div class="launch-messages">
+        <div *ngFor="let msg of messages; let i = index"
+             class="status-message"
+             [class.active]="msg.status === 'active'"
+             [class.complete]="msg.status === 'complete'">
+          <mat-icon class="message-icon">
+            {{ msg.status === 'active' ? 'sync' : 'check_circle' }}
+          </mat-icon>
+          <span class="message-text">{{ msg.text }}</span>
+          <mat-icon class="message-check">check_circle</mat-icon>
+        </div>
       </div>
-      <div class="nct-progress-segments">
-        <div *ngFor="let seg of progressSegments" class="prog-seg"
-             [class.prog-seg--lit]="progress >= seg"></div>
-      </div>
+
     </div>
 
-    <div class="nct-coords">
-      <span>LAT {{ coordLat }}°N</span>
-      <span class="coord-sep">|</span>
-      <span>LON {{ coordLon }}°E</span>
-      <span class="coord-sep">|</span>
-      <span>SECURE CHANNEL ACTIVE</span>
+    <!-- Security footer -->
+    <div class="launch-footer">
+      <mat-icon class="footer-icon">lock</mat-icon>
+      <span>AES-256 Encrypted Channel</span>
     </div>
+
   </div>
 
 </div>

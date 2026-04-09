@@ -9,13 +9,10 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 
-const LOG_MESSAGES = [
-  'Authenticating credentials...',
-  'Establishing encrypted channel...',
-  'Loading vessel registry...',
-  'Preparing helm interface...',
-  'All systems ready.',
-];
+interface StatusMessage {
+  text: string;
+  status: 'pending' | 'active' | 'complete';
+}
 
 @Component({
   selector: 'app-launch-transition',
@@ -24,78 +21,70 @@ const LOG_MESSAGES = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LaunchTransitionComponent implements OnInit, OnDestroy {
-  @Input() shipName  = 'Ship System';
+  @Input() shipName  = 'Vessel Dashboard';
   @Input() targetUrl = '';
   @Input() shipIcon  = '🚢';
   @Output() launched = new EventEmitter<void>();
 
-  isExpanding    = false;
-  isFadingOut    = false;
-  showText       = false;
-  progress       = 0;
-  sweepAngle     = 0;
-  visibleMessages: string[] = [];
+  isFadingOut = false;
+  progress    = 0;
 
-  // Fake nautical coordinates for visual effect
-  coordLat = (Math.random() * 60 + 10).toFixed(4);
-  coordLon = (Math.random() * 80 + 20).toFixed(4);
+  messages: StatusMessage[] = [
+    { text: 'Authenticating credentials', status: 'pending' },
+    { text: 'Establishing encrypted tunnel', status: 'pending' },
+    { text: 'Loading vessel interface', status: 'pending' },
+    { text: 'Synchronizing data streams', status: 'pending' },
+    { text: 'Connection established', status: 'pending' },
+  ];
 
-  // Segmented progress: 20 segments → lit at 5,10,15,...100
-  progressSegments = Array.from({ length: 20 }, (_, i) => (i + 1) * 5);
-
-  private sweepInterval!: ReturnType<typeof setInterval>;
-  private logInterval!:   ReturnType<typeof setTimeout>;
   private timers: ReturnType<typeof setTimeout>[] = [];
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.startSweep();
-    this.runLaunchSequence();
+    this.runConnectionSequence();
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.sweepInterval);
     this.timers.forEach(t => clearTimeout(t));
   }
 
-  private tick(): void { this.cdr.markForCheck(); }
-
-  // ── Continuous radar sweep ─────────────────────────────────────────────
-  private startSweep(): void {
-    let angle = 0;
-    this.sweepInterval = setInterval(() => {
-      angle = (angle + 2.5) % 360;
-      this.sweepAngle = angle;
-      this.tick();
-    }, 16); // ~60fps
+  private tick(): void {
+    this.cdr.markForCheck();
   }
 
-  // ── Main sequence ──────────────────────────────────────────────────────
-  private runLaunchSequence(): void {
-    // Step 1 – show text block
-    this.delay(500, () => { this.showText = true; this.tick(); });
+  private runConnectionSequence(): void {
+    const stepDuration = 450; // ms per step
+    const totalSteps = this.messages.length;
 
-    // Step 2 – reveal log messages one by one
-    LOG_MESSAGES.forEach((msg, i) => {
-      this.delay(700 + i * 340, () => {
-        this.visibleMessages = [...this.visibleMessages, msg];
+    // Animate progress from 0 to 100 over the total duration
+    this.delay(200, () => {
+      this.animateProgress(0, 100, totalSteps * stepDuration);
+    });
+
+    // Process each message sequentially
+    this.messages.forEach((msg, index) => {
+      // Mark as active
+      this.delay(200 + index * stepDuration, () => {
+        this.messages[index].status = 'active';
+        this.tick();
+      });
+
+      // Mark as complete
+      this.delay(200 + (index + 0.7) * stepDuration, () => {
+        this.messages[index].status = 'complete';
         this.tick();
       });
     });
 
-    // Step 3 – animate progress 0 → 100 over 1.8s (starting at 800ms)
-    this.delay(800, () => {
-      this.animateProgress(0, 100, 1900, (v) => { this.progress = v; this.tick(); });
-    });
-
-    // Step 4 – fade out and emit (total ~2900ms)
-    this.delay(2900, () => {
+    // Fade out and launch
+    const totalDuration = 200 + totalSteps * stepDuration + 400;
+    this.delay(totalDuration, () => {
       this.isFadingOut = true;
       this.tick();
-      this.delay(600, () => {
+
+      this.delay(400, () => {
         this.launched.emit();
-        // Note: actual navigation is handled by dashboard's onLaunched()
       });
     });
   }
@@ -104,18 +93,20 @@ export class LaunchTransitionComponent implements OnInit, OnDestroy {
     this.timers.push(setTimeout(fn, ms));
   }
 
-  private animateProgress(
-    from: number,
-    to: number,
-    duration: number,
-    onUpdate: (value: number) => void,
-  ): void {
+  private animateProgress(from: number, to: number, duration: number): void {
     const start = performance.now();
-    const step  = (now: number) => {
-      const t     = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
-      onUpdate(Math.round(from + (to - from) * eased));
-      if (t < 1) requestAnimationFrame(step);
+    const step = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(elapsed / duration, 1);
+
+      // Ease-out cubic for smooth deceleration
+      const eased = 1 - Math.pow(1 - t, 3);
+      this.progress = Math.round(from + (to - from) * eased);
+      this.tick();
+
+      if (t < 1) {
+        requestAnimationFrame(step);
+      }
     };
     requestAnimationFrame(step);
   }

@@ -1,134 +1,172 @@
-<div class="modal-container">
-  <div class="modal-header">
-    <h2>{{ title }}</h2>
-    <button mat-icon-button (click)="cancel()" class="close-btn">
+<div class="dtl-modal">
+
+  <!-- ── Header ── -->
+  <div class="dtl-header">
+    <div class="dtl-header__left">
+      <div>
+        <h2 class="dtl-header__title">{{ title }}</h2>
+        <p class="dtl-header__sub">Maritime Fleet Registry</p>
+      </div>
+    </div>
+    <button class="dtl-close" (click)="cancel()" type="button">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
-    <!-- Ship Name -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Ship Name</mat-label>
-      <input matInput formControlName="name" placeholder="Enter ship name" />
-      <mat-icon matPrefix>directions_boat</mat-icon>
-      <mat-error *ngIf="form.get('name')?.hasError('required')">
-        Ship name is required
-      </mat-error>
-    </mat-form-field>
+  <!-- ── Form ── -->
+  <form [formGroup]="form" (ngSubmit)="submit()" class="dtl-form">
 
-    <!-- Redirect URL -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Dashboard URL</mat-label>
+    <!-- ─ Vessel Name ─ -->
+    <div class="dtl-field">
+      <label class="dtl-label">
+        <mat-icon class="dtl-label__icon">directions_boat</mat-icon>
+        Vessel Name <span class="req">*</span>
+      </label>
       <input
-        matInput
-        formControlName="redirect_url"
-        placeholder="https://ship-dashboard.example.com"
+        class="dtl-input"
+        formControlName="name"
+        placeholder="e.g. MV Pacific Voyager"
+        autocomplete="off"
       />
-      <mat-icon matPrefix>link</mat-icon>
-      <mat-error *ngIf="form.get('redirect_url')?.hasError('required')">
+      <div class="dtl-error" *ngIf="form.get('name')?.touched && form.get('name')?.hasError('required')">
+        Vessel name is required
+      </div>
+    </div>
+
+    <!-- ─ Dashboard URL — encrypted display ─ -->
+    <div class="dtl-field">
+      <label class="dtl-label">
+        <mat-icon class="dtl-label__icon">link</mat-icon>
+        Dashboard URL <span class="req">*</span>
+      </label>
+
+      <div class="dtl-url-wrapper">
+        <!-- Prefix icon: lock when encrypted, lock_open when editing -->
+        <mat-icon class="dtl-url-icon" [class.dtl-url-icon--locked]="!urlFocused() && urlHasValue()" [class.dtl-url-icon--open]="urlFocused()">
+          {{ urlFocused() ? 'lock_open' : (urlHasValue() ? 'lock' : 'link') }}
+        </mat-icon>
+
+        <input
+          #urlInputRef
+          class="dtl-input dtl-input--url"
+          [class.dtl-input--encrypted]="!urlFocused() && urlHasValue()"
+          [class.dtl-input--editing]="urlFocused()"
+          (focus)="onUrlFocus()"
+          (blur)="onUrlBlur($event)"
+          (input)="onUrlInput($event)"
+          placeholder="https://vessel-dashboard.example.com"
+          autocomplete="off"
+          spellcheck="false"
+          type="text"
+        />
+
+      </div>
+
+
+      <div class="dtl-error"
+           *ngIf="form.get('redirect_url')?.touched && form.get('redirect_url')?.hasError('required')">
         Dashboard URL is required
-      </mat-error>
-    </mat-form-field>
+      </div>
+    </div>
 
-    <!-- Description -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Description</mat-label>
+    <!-- ─ Description ─ -->
+    <div class="dtl-field">
+      <label class="dtl-label">
+        <mat-icon class="dtl-label__icon">description</mat-icon>
+        Description
+      </label>
       <textarea
-        matInput
+        class="dtl-input dtl-textarea"
         formControlName="description"
-        rows="3"
-        placeholder="Brief description of the ship"
+        rows="2"
+        placeholder="Brief description of this vessel…"
       ></textarea>
-      <mat-icon matPrefix>description</mat-icon>
-    </mat-form-field>
+    </div>
 
-    <!-- Status -->
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Status</mat-label>
-      <mat-select formControlName="status">
-        <mat-option value="active">Active</mat-option>
-        <mat-option value="maintenance">Maintenance</mat-option>
-        <mat-option value="inactive">Inactive</mat-option>
-      </mat-select>
-      <mat-icon matPrefix>flag</mat-icon>
-    </mat-form-field>
-
-    <!-- Image Upload or URL -->
-    <div class="image-section">
-      <h3>Ship Image</h3>
-
-      <!-- Image Preview -->
-      <div class="image-preview" *ngIf="imagePreview()">
-        <img [src]="imagePreview()" alt="Preview" />
-        <button
-          type="button"
-          mat-icon-button
-          class="clear-image-btn"
-          (click)="clearImage()"
+    <!-- ─ Status ─ -->
+    <div class="dtl-field">
+      <label class="dtl-label">
+        <mat-icon class="dtl-label__icon">flag</mat-icon>
+        Operational Status <span class="req">*</span>
+      </label>
+      <div class="dtl-status-group">
+        <label
+          class="dtl-status-option dtl-status-option--active"
+          [class.selected]="form.get('status')?.value === 'active'"
         >
+          <input type="radio" formControlName="status" value="active" hidden />
+          <span class="status-dot"></span>
+          <span>Active</span>
+        </label>
+        <label
+          class="dtl-status-option dtl-status-option--maintenance"
+          [class.selected]="form.get('status')?.value === 'maintenance'"
+        >
+          <input type="radio" formControlName="status" value="maintenance" hidden />
+          <span class="status-dot"></span>
+          <span>Maintenance</span>
+        </label>
+        <label
+          class="dtl-status-option dtl-status-option--inactive"
+          [class.selected]="form.get('status')?.value === 'inactive'"
+        >
+          <input type="radio" formControlName="status" value="inactive" hidden />
+          <span class="status-dot"></span>
+          <span>Inactive</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ─ Ship Image ─ -->
+    <div class="dtl-field">
+      <label class="dtl-label">
+        <mat-icon class="dtl-label__icon">image</mat-icon>
+        Vessel Image
+      </label>
+
+      <div class="dtl-img-preview" *ngIf="imagePreview()">
+        <img [src]="imagePreview()" alt="Preview" />
+        <button type="button" class="dtl-img-clear" (click)="clearImage()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
 
-      <!-- Upload Button -->
-      <div class="upload-area" *ngIf="!imagePreview()">
-        <input
-          type="file"
-          accept="image/*"
-          (change)="onFileSelected($event)"
-          #fileInput
-          hidden
-        />
-        <button
-          type="button"
-          mat-stroked-button
-          (click)="fileInput.click()"
-          class="upload-btn"
-        >
+      <div class="dtl-upload" *ngIf="!imagePreview()">
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" #fileInput hidden />
+        <button type="button" class="dtl-upload__btn" (click)="fileInput.click()">
           <mat-icon>cloud_upload</mat-icon>
-          Upload Image
+          <span>Click to upload image</span>
         </button>
-        <span class="or-text">or</span>
-        <mat-form-field appearance="outline" class="image-url-field">
-          <mat-label>Image URL</mat-label>
-          <input
-            matInput
-            formControlName="image_url"
-            placeholder="https://example.com/ship.jpg"
-            (input)="imagePreview.set($any($event.target).value)"
-          />
-          <mat-icon matPrefix>image</mat-icon>
-        </mat-form-field>
+        <div class="dtl-upload__divider">
+          <span>or paste URL below</span>
+        </div>
+        <input
+          class="dtl-input"
+          formControlName="image_url"
+          placeholder="https://example.com/vessel.jpg"
+          (input)="imagePreview.set($any($event.target).value)"
+          type="url"
+        />
       </div>
     </div>
 
-    <!-- Error Message -->
-    <div class="error-message" *ngIf="error()">
-      <mat-icon>error</mat-icon>
+    <!-- ─ Error ─ -->
+    <div class="dtl-form-error" *ngIf="error()">
+      <mat-icon>error_outline</mat-icon>
       <span>{{ error() }}</span>
     </div>
 
-    <!-- Actions -->
-    <div class="modal-actions">
-      <button
-        type="button"
-        mat-stroked-button
-        (click)="cancel()"
-        [disabled]="loading()"
-      >
+    <!-- ─ Actions ─ -->
+    <div class="dtl-actions">
+      <button type="button" class="dtl-btn dtl-btn--cancel" (click)="cancel()" [disabled]="loading()">
         Cancel
       </button>
-      <button
-        type="submit"
-        mat-flat-button
-        color="primary"
-        [disabled]="form.invalid || loading()"
-        class="submit-btn"
-      >
-        <mat-spinner *ngIf="loading()" diameter="20"></mat-spinner>
-        <span *ngIf="!loading()">{{ submitLabel }}</span>
+      <button type="submit" class="dtl-btn dtl-btn--submit" [disabled]="form.invalid || loading()">
+        <mat-spinner *ngIf="loading()" diameter="18"></mat-spinner>
+        <mat-icon *ngIf="!loading()">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+        <span>{{ submitLabel }}</span>
       </button>
     </div>
+
   </form>
 </div>

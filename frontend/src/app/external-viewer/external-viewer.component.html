@@ -1,21 +1,12 @@
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MARITIME COMMAND BAR
-     ═══════════════════════════════════════════════════════════════════════ -->
 <div class="cmd-bar" [class.cmd-bar--visible]="bannerVisible">
 
   <!-- Left: Brand -->
   <div class="cmd-bar__brand">
     <div class="cmd-bar__logo">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <path d="M3 17l3-8 3 4 3-6 3 4 3-8" stroke="#00d4ff" stroke-width="1.8"
-              stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M2 20h20" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
-        <circle cx="12" cy="7" r="1.2" fill="#00d4ff" opacity=".8"/>
-      </svg>
+      <img src="../../assets/D-logo.png" alt="Dtyle.AI">
     </div>
     <div class="cmd-bar__brand-text">
-      <span class="cmd-bar__app-name">Dtyle<span class="accent">.AI</span></span>
-      <span class="cmd-bar__subtitle">Maritime Command</span>
+      <span class="cmd-bar__app-name">Dtyle.AI</span>
     </div>
   </div>
 
@@ -48,9 +39,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MAIN VIEWER AREA
-     ═══════════════════════════════════════════════════════════════════════ -->
 <div class="viewer-shell" [class.viewer-shell--offset]="bannerVisible">
 
   <!-- ── Loading Overlay ── -->
@@ -97,9 +85,6 @@
 
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     LEAVE CONFIRMATION MODAL
-     ═══════════════════════════════════════════════════════════════════════ -->
 <div class="modal-backdrop" *ngIf="showWarning" (click)="dismissWarning()">
   <div class="modal-card" (click)="$event.stopPropagation()">
 
