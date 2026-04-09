@@ -1,46 +1,147 @@
-<!-- System Banner -->
-<div class="system-banner" [ngClass]="{ 'visible': bannerVisible }">
-  <div class="banner-inner">
-    <span class="banner-icon">🔗</span>
-    <span class="banner-text">You are now viewing an <strong>External System</strong></span>
-    <span class="banner-sep">|</span>
-    <span class="banner-ship">{{ shipName }}</span>
-    <button class="return-btn" (click)="returnToDashboard()">
-      ← Return to Dashboard
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MARITIME COMMAND BAR
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="cmd-bar" [class.cmd-bar--visible]="bannerVisible">
+
+  <!-- Left: Brand -->
+  <div class="cmd-bar__brand">
+    <div class="cmd-bar__logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M3 17l3-8 3 4 3-6 3 4 3-8" stroke="#00d4ff" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 20h20" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+        <circle cx="12" cy="7" r="1.2" fill="#00d4ff" opacity=".8"/>
+      </svg>
+    </div>
+    <div class="cmd-bar__brand-text">
+      <span class="cmd-bar__app-name">Dtyle<span class="accent">.AI</span></span>
+      <span class="cmd-bar__subtitle">Maritime Command</span>
+    </div>
+  </div>
+
+  <!-- Center: Vessel info pill -->
+  <div class="cmd-bar__vessel" *ngIf="!decryptError">
+    <div class="vessel-indicator"></div>
+    <span class="vessel-label">ACTIVE VESSEL</span>
+    <span class="vessel-name">{{ shipName }}</span>
+  </div>
+
+  <!-- Right: Controls -->
+  <div class="cmd-bar__controls">
+    <div class="cmd-bar__clock">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      {{ currentTime }} UTC
+    </div>
+
+    <div class="cmd-bar__divider"></div>
+
+    <button class="cmd-bar__btn cmd-bar__btn--secondary" (click)="showWarning = true">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M10 19l-7-7 7-7M3 12h18" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Dashboard
     </button>
   </div>
 </div>
 
-<!-- Embedded frame / content area -->
-<div class="viewer-frame" [style.paddingTop.px]="bannerVisible ? 44 : 0">
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MAIN VIEWER AREA
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="viewer-shell" [class.viewer-shell--offset]="bannerVisible">
+
+  <!-- ── Loading Overlay ── -->
+  <div class="loading-overlay" *ngIf="isLoading && !decryptError">
+    <div class="loading-content">
+      <div class="sonar-ring">
+        <div class="sonar-pulse"></div>
+        <div class="sonar-dot"></div>
+      </div>
+      <p class="loading-title">Establishing Secure Connection</p>
+      <p class="loading-vessel">{{ shipName }}</p>
+      <div class="loading-bar">
+        <div class="loading-bar__fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Iframe ── -->
   <iframe
-    *ngIf="targetUrl"
+    *ngIf="!decryptError && targetUrl"
     [src]="safeUrl"
-    class="external-iframe"
+    class="main-iframe"
     frameborder="0"
     allow="fullscreen"
     title="External System"
+    (load)="onIframeLoad()"
   ></iframe>
 
-  <!-- Fallback if iframe is blocked -->
-  <div class="iframe-blocked" *ngIf="!targetUrl">
-    <div class="blocked-icon">🚀</div>
-    <p>The external system opened in a new context.</p>
-    <button class="return-btn-big" (click)="returnToDashboard()">
-      ← Return to Dashboard
+  <!-- ── Decrypt Error State ── -->
+  <div class="error-state" *ngIf="decryptError">
+    <div class="error-icon">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+        <path d="M12 9v4M12 17h.01" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              stroke="#ef4444" stroke-width="1.8"/>
+      </svg>
+    </div>
+    <h3 class="error-title">Navigation Token Invalid</h3>
+    <p class="error-body">The session token could not be verified. This link may have expired or been tampered with.</p>
+    <button class="btn-primary" (click)="returnToDashboard()">
+      Return to Fleet Dashboard
     </button>
   </div>
+
 </div>
 
-<!-- Back Navigation Warning Modal -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     LEAVE CONFIRMATION MODAL
+     ═══════════════════════════════════════════════════════════════════════ -->
 <div class="modal-backdrop" *ngIf="showWarning" (click)="dismissWarning()">
-  <div class="warning-modal" (click)="$event.stopPropagation()">
-    <div class="warning-icon">⚠️</div>
-    <h3>Leave External System?</h3>
-    <p>You are currently viewing an <strong>external system</strong>. Navigating away may close your session.</p>
+  <div class="modal-card" (click)="$event.stopPropagation()">
+
+    <!-- Top accent bar -->
+    <div class="modal-accent-bar"></div>
+
+    <!-- Icon -->
+    <div class="modal-icon-wrap">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+        <path d="M12 9v4M12 17h.01" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              stroke="#f59e0b" stroke-width="1.8"/>
+      </svg>
+    </div>
+
+    <h3 class="modal-title">Leave Active Session?</h3>
+
+    <div class="modal-vessel-badge">
+      <div class="vessel-indicator vessel-indicator--sm"></div>
+      {{ shipName }}
+    </div>
+
+    <p class="modal-body">
+      You are currently inside an active vessel interface. Navigating away will
+      terminate the current session and return you to the fleet dashboard.
+    </p>
+
     <div class="modal-actions">
-      <button class="btn-stay" (click)="dismissWarning()">Stay Here</button>
-      <button class="btn-leave" (click)="confirmLeave()">Leave & Return to Dashboard</button>
+      <button class="btn-secondary" (click)="dismissWarning()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Stay in Session
+      </button>
+      <button class="btn-danger" (click)="confirmLeave()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M10 19l-7-7 7-7M3 12h18" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Leave & Return
+      </button>
     </div>
   </div>
 </div>

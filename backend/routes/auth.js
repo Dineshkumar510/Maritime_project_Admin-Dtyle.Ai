@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const pool = require("../db/pool");
 const { requireAuth } = require("../middleware/auth");
+const { decrypt } = require("../utils/crypto");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TTL = process.env.ACCESS_TOKEN_TTL || "12h";
@@ -232,12 +233,15 @@ router.post("/generate-token", requireAuth, async (req, res) => {
 
     const ssoToken = jwt.sign(ssoPayload, JWT_SECRET, { expiresIn: "5m" });
 
+    // 🔐 Decrypt the stored redirect_url before using it — it is AES-encrypted at rest
+    const plainRedirectUrl = decrypt(ship.redirect_url);
+
     // Extract dynamic Host/Origin so each ship correctly targets its own Cloudflare tunnel
     let targetOrigin = NEXT_APP_URL;
-    let targetPath = ship.redirect_url;
+    let targetPath = plainRedirectUrl;
 
-    if (ship.redirect_url.startsWith("http")) {
-      const parsedUrl = new URL(ship.redirect_url);
+    if (plainRedirectUrl.startsWith("http")) {
+      const parsedUrl = new URL(plainRedirectUrl);
       targetOrigin = parsedUrl.origin;
       targetPath = parsedUrl.pathname + parsedUrl.search;
     }

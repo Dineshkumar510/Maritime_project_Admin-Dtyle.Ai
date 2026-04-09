@@ -1,20 +1,13 @@
 <div class="mcc-wrap" [class.dark]="darkMode()">
 
-  <!-- ══ TOPBAR ══════════════════════════════════════════════════════════════ -->
   <header class="mcc-header">
     <div class="brand">
       <div class="brand-emblem">
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-          <circle cx="20" cy="20" r="12" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
-          <path d="M20 8 L20 32 M8 20 L32 20" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
-          <circle cx="20" cy="20" r="3" fill="currentColor"/>
-          <path d="M14 26 C14 26 17 22 20 22 C23 22 26 26 26 26 L20 30 Z" fill="currentColor" opacity="0.8"/>
-          <rect x="19" y="10" width="2" height="12" fill="currentColor" opacity="0.8"/>
-        </svg>
+          <img src="../../assets/D-logo.png" alt="Dtlye.AI">
       </div>
       <div class="brand-info">
-        <span class="brand-name">Maritime<em>OS</em></span>
+        <!-- <span class="brand-name">Maritime<em>OS</em></span> -->
+         <span class="brand-name">Maritime</span>
         <span class="brand-tagline">Fleet Command Center</span>
       </div>
     </div>
@@ -52,10 +45,7 @@
     </div>
   </header>
 
-  <!-- ══ MAIN ════════════════════════════════════════════════════════════════ -->
   <main class="mcc-main">
-
-    <!-- Section header -->
     <div class="section-header">
       <div class="section-title-block">
         <div class="section-label">FLEET REGISTRY</div>
@@ -68,7 +58,6 @@
       </button>
     </div>
 
-    <!-- ── LOADING STATE ─────────────────────────────────────────────────── -->
     <ng-container *ngIf="loading(); else notLoading">
       <div class="vessel-grid">
         <div *ngFor="let s of skeletons" class="vessel-card vessel-card--skeleton">
@@ -82,10 +71,7 @@
       </div>
     </ng-container>
 
-    <!-- ── LOADED STATE ──────────────────────────────────────────────────── -->
     <ng-template #notLoading>
-
-      <!-- Empty state -->
       <ng-container *ngIf="ships().length === 0; else hasShips">
         <div class="fleet-empty">
           <div class="empty-compass">
@@ -102,7 +88,6 @@
         </div>
       </ng-container>
 
-      <!-- Vessel grid -->
       <ng-template #hasShips>
         <div class="vessel-grid">
           <div
@@ -126,13 +111,11 @@
               />
               <div class="vc-img-gradient"></div>
 
-              <!-- Status pill (top-left) -->
               <div class="vc-status" [class]="'vc-status--' + ship.status">
                 <span class="vc-status-dot"></span>
                 {{ ship.status | titlecase }}
               </div>
 
-              <!-- Actions (top-right, appear on hover) -->
               <div class="vc-actions" (click)="$event.stopPropagation()">
                 <button class="vca-btn vca-btn--edit" (click)="editShip($event, ship)" matTooltip="Edit Vessel">
                   <mat-icon>edit</mat-icon>
@@ -142,7 +125,6 @@
                 </button>
               </div>
 
-              <!-- Launching overlay -->
               <div class="vc-launching-overlay" *ngIf="launchingId() === ship.id">
                 <div class="vlo-pulse p1"></div>
                 <div class="vlo-pulse p2"></div>
@@ -178,14 +160,12 @@
     </ng-template>
   </main>
 
-  <!-- ══ FOOTER ══════════════════════════════════════════════════════════════ -->
   <footer class="mcc-footer">
     <span>&copy; {{ year }} Dtyle Maritime Systems</span>
     <span class="footer-dot">·</span>
     <span>All rights reserved</span>
   </footer>
 
-  <!-- ══ TOAST ═══════════════════════════════════════════════════════════════ -->
   <div *ngIf="toast()" class="mcc-toast" [class.mcc-toast--error]="toastType() === 'error'">
     <mat-icon>{{ toastType() === 'success' ? 'check_circle' : 'error_outline' }}</mat-icon>
     <span>{{ toast() }}</span>
@@ -193,7 +173,6 @@
 
 </div>
 
-<!-- ══ LAUNCH TRANSITION (portal) ════════════════════════════════════════════ -->
 <app-launch-transition
   *ngIf="showLaunchScreen()"
   [shipName]="launchingShipName"

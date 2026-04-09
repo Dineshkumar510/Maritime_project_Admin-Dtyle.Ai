@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../services/auth.service';
 import { ShipsService, Ship } from '../services/ships.service';
 import { AddShipModalComponent } from './add-ship-modal/add-ship-modal.component';
+import { UrlCryptoService } from '../services/url-crypto.service.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,6 +37,7 @@ export class DashboardComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private urlCrypto: UrlCryptoService,
   ) {}
 
   ngOnInit(): void { this.loadShips(); }
@@ -85,12 +87,11 @@ export class DashboardComponent implements OnInit {
     this.launchingId.set(null);
     this.cdr.markForCheck();
 
-    // Navigate to the ExternalViewerComponent with url + ship name as query params
+    // 🔐 Encrypt the url + name into a single opaque token before putting it in the URL
+    const token = this.urlCrypto.encrypt(this.launchTargetUrl, this.launchingShipName);
+
     this.router.navigate(['/external'], {
-      queryParams: {
-        url:  this.launchTargetUrl,
-        name: this.launchingShipName,
-      },
+      queryParams: { data: token },
     });
   }
 
