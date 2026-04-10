@@ -151,11 +151,15 @@
                 [class.vc-connect-btn--maintenance]="ship.status === 'maintenance'"
                 [class.vc-connect-btn--inactive]="ship.status === 'inactive'"
                 (click)="openShip(ship)"
-                [disabled]="launchingId() !== null"
+                [disabled]="launchingId() !== null || ship.status !== 'active'"
                 [matTooltip]="ship.status !== 'active' ? 'Vessel is ' + ship.status : 'Connect to vessel'"
               >
-                <mat-icon>{{ ship.status === 'active' ? 'sensors' : ship.status === 'maintenance' ? 'build' : 'power_off' }}</mat-icon>
-                <span>{{ ship.status === 'active' ? 'Connect' : ship.status === 'maintenance' ? 'Maintain' : 'Offline' }}</span>
+                <mat-icon>
+                  {{ ship.status === 'active' ? 'sensors' : ship.status === 'maintenance' ? 'build' : 'power_off' }}
+                </mat-icon>
+                <span>
+                  {{ ship.status === 'active' ? 'Connect' : ship.status === 'maintenance' ? 'Maintain' : 'Offline' }}
+                </span>
               </button>
             </div>
 

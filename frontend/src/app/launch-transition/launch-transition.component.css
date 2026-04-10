@@ -1,11 +1,5 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   MARITIME OS — PROFESSIONAL SECURE CONNECTION INTERFACE
-   Enterprise-grade minimal design with subtle animations
-   ═══════════════════════════════════════════════════════════════════════════ */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ─── Screen wrapper ─────────────────────────────────────────────────────── */
 .launch-screen {
   position: fixed;
   inset: 0;
@@ -17,6 +11,19 @@
   background: linear-gradient(135deg, #0A1628 0%, #060e1f 100%);
   overflow: hidden;
   animation: fadeIn 0.3s ease;
+}
+
+.ship-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ship-icon img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 12px;
 }
 
 .launch-screen.fade-out {

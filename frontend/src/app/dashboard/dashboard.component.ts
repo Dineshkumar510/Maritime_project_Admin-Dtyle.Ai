@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
   // Launch screen state
   showLaunchScreen  = signal(false);
   launchingShipName = '';
-  launchingShipIcon = '🚢';
+  launchingShipIcon = '';
   launchTargetUrl   = '';
 
   readonly year      = new Date().getFullYear();
@@ -50,52 +50,46 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ── Computed fleet stats ───────────────────────────────────────────────
   get activeCount():      number { return this.ships().filter(s => s.status === 'active').length; }
   get maintenanceCount(): number { return this.ships().filter(s => s.status === 'maintenance').length; }
   get inactiveCount():    number { return this.ships().filter(s => s.status === 'inactive').length; }
 
-  // ── Ship card click → launch transition → external viewer ──────────────
+
   openShip(ship: Ship): void {
-    if (this.launchingId() !== null) return;
+  if (this.launchingId() !== null || ship.status !== 'active') return;
 
-    this.launchingId.set(ship.id);
-    this.cdr.markForCheck();
+  this.launchingId.set(ship.id);
+  this.cdr.markForCheck();
 
-    this.auth.generateShipToken(ship.id).subscribe({
-      next: (res) => {
-        this.launchingShipName = ship.name;
-        this.launchingShipIcon = '🚢';
-        this.launchTargetUrl   = res.ssoUrl;
+  this.auth.generateShipToken(ship.id).subscribe({
+    next: (res) => {
+      this.launchingShipName = ship.name;
+      this.launchingShipIcon = ship.image_url || 'assets/default-ship.jpg';
+      this.launchTargetUrl   = res.ssoUrl;
 
-        setTimeout(() => {
-          this.showLaunchScreen.set(true);
-          this.cdr.markForCheck();
-        }, 350);
-      },
-      error: () => {
-        this.launchingId.set(null);
-        this.showToast('Failed to open ship dashboard', 'error');
+      setTimeout(() => {
+        this.showLaunchScreen.set(true);
         this.cdr.markForCheck();
-      },
-    });
-  }
+      }, 350);
+    },
+    error: () => {
+      this.launchingId.set(null);
+      this.showToast('Failed to open ship dashboard', 'error');
+      this.cdr.markForCheck();
+    },
+  });
+}
 
-  // Called by <app-launch-transition> (launched) event — navigate to external viewer
   onLaunched(): void {
     this.showLaunchScreen.set(false);
     this.launchingId.set(null);
     this.cdr.markForCheck();
-
-    // 🔐 Encrypt the url + name into a single opaque token before putting it in the URL
     const token = this.urlCrypto.encrypt(this.launchTargetUrl, this.launchingShipName);
-
     this.router.navigate(['/external'], {
       queryParams: { data: token },
     });
   }
 
-  // ── Delete ────────────────────────────────────────────────────────────
   deleteShip(event: MouseEvent, id: number): void {
     event.stopPropagation();
     if (!confirm('Remove this vessel from the registry?')) return;
