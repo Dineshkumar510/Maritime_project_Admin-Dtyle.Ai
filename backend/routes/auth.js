@@ -11,10 +11,8 @@ const { decrypt } = require("../utils/crypto");
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TTL = process.env.ACCESS_TOKEN_TTL || "12h";
 const REFRESH_DAYS = Number(process.env.REFRESH_TOKEN_TTL_DAYS || 7);
-const NEXT_APP_URL =
-  process.env.NEXT_APP_URL ||
-  "https://faq-present-trim-highways.trycloudflare.com";
-const ANGULAR_URL = process.env.ANGULAR_APP_URL || "http://localhost:4200";
+const NEXT_APP_URL = process.env.NEXT_APP_URL;
+const ANGULAR_URL = process.env.ANGULAR_APP_URL;
 const IS_PROD = process.env.NODE_ENV === "production";
 
 function buildPayload(user) {
