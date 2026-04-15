@@ -43,18 +43,111 @@
 
   <!-- ── Loading Overlay ── -->
   <div class="loading-overlay" *ngIf="isLoading && !decryptError">
-    <div class="loading-content">
-      <div class="sonar-ring">
-        <div class="sonar-pulse"></div>
-        <div class="sonar-dot"></div>
+  <div class="sk-shell">
+
+    <!-- Top Navbar Skeleton -->
+    <div class="sk-topbar">
+      <div class="sk sk-logo"></div>
+      <div class="sk sk-brand-text"></div>
+      <div class="sk-topbar-right">
+        <div class="sk sk-date-pill"></div>
+        <div class="sk sk-avatar"></div>
       </div>
-      <p class="loading-title">Establishing Secure Connection</p>
-      <p class="loading-vessel">{{ shipName }}</p>
-      <div class="loading-bar">
-        <div class="loading-bar__fill"></div>
+    </div>
+
+    <!-- Body: Sidebar + Content -->
+    <div class="sk-body">
+
+      <!-- Left Sidebar Skeleton -->
+      <div class="sk-sidebar">
+        <div class="sk sk-sidebar-active-item"></div>
+        <div class="sk-sidebar-section-label">
+          <div class="sk sk-sidebar-label"></div>
+        </div>
+        <div class="sk-nav-list">
+          <div class="sk-nav-row" *ngFor="let w of [90, 70, 60, 80, 65, 75]">
+            <div class="sk sk-nav-icon"></div>
+            <div class="sk sk-nav-text" [style.width.%]="w"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Skeleton -->
+      <div class="sk-content">
+
+        <!-- Page Title -->
+        <div class="sk-title-block">
+          <div class="sk-l sk-page-title"></div>
+          <div class="sk-l sk-page-sub"></div>
+        </div>
+
+        <!-- Stat Cards Row -->
+        <div class="sk-stat-grid">
+          <div class="sk-stat-card" *ngFor="let _ of [1,2,3,4]">
+            <div class="sk-stat-top">
+              <div class="sk-l sk-stat-label"></div>
+              <div class="sk-l sk-stat-icon"></div>
+            </div>
+            <div class="sk-l sk-stat-num"></div>
+            <div class="sk-l sk-stat-sub"></div>
+          </div>
+        </div>
+
+        <!-- Alert Panels Row -->
+        <div class="sk-panel-grid">
+          <div class="sk-panel" *ngFor="let _ of [1,2]">
+            <div class="sk-panel-head">
+              <div class="sk-l sk-panel-icon-sm"></div>
+              <div class="sk-l sk-panel-title"></div>
+              <div class="sk-l sk-panel-badge"></div>
+            </div>
+            <div class="sk-panel-empty">
+              <div class="sk-l sk-panel-empty-icon"></div>
+              <div class="sk-l sk-panel-empty-msg"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Row -->
+        <div class="sk-panel-grid">
+          <!-- Use Case Analytics -->
+          <div class="sk-panel">
+            <div class="sk-panel-head">
+              <div class="sk-l sk-panel-icon-sm"></div>
+              <div class="sk-l sk-panel-title" style="width:130px;"></div>
+            </div>
+            <div class="sk-an-row" *ngFor="let w of [100, 80, 70, 90, 60]">
+              <div class="sk-l sk-an-label"></div>
+              <div class="sk-l sk-an-sub"></div>
+              <div class="sk-l sk-an-bar"></div>
+            </div>
+          </div>
+          <!-- Incident Metrics -->
+          <div class="sk-panel">
+            <div class="sk-panel-head">
+              <div class="sk-l sk-panel-icon-sm"></div>
+              <div class="sk-l sk-panel-title" style="width:160px;"></div>
+            </div>
+            <div class="sk-metric-row" *ngFor="let _ of [1,2,3]">
+              <div class="sk-metric-left">
+                <div class="sk-l sk-metric-icon"></div>
+                <div>
+                  <div class="sk-l sk-metric-label"></div>
+                  <div class="sk-l sk-metric-sub"></div>
+                </div>
+              </div>
+              <div class="sk-metric-right">
+                <div class="sk-l sk-metric-value"></div>
+                <div class="sk-l sk-metric-bar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
+</div>
 
   <!-- ── Iframe ── -->
   <iframe

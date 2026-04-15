@@ -68,7 +68,7 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
     // Slide banner in after a moment
     setTimeout(() => { this.bannerVisible = true; this.cdr.markForCheck(); }, 400);
     // Hide iframe loader after a reasonable delay
-    setTimeout(() => { this.isLoading = false; this.cdr.markForCheck(); }, 3000);
+    setTimeout(() => { this.isLoading = false; this.cdr.markForCheck(); }, 4500);
 
     // Activate navigation lock
     this.navLock.lock(this.targetUrl);
