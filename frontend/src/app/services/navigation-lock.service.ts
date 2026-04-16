@@ -14,17 +14,17 @@ export class NavigationLockService {
     this.isLocked = true;
     this.targetUrl = targetUrl;
 
-    // Push a sentinel entry so the first back-press lands here, not the dashboard
-    history.pushState({ navigationLocked: true }, '', window.location.href);
+    if (!(history.state && history.state.navigationLocked)) {
+      history.pushState({ navigationLocked: true }, '', window.location.href);
+    }
 
     this.boundBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = '';   // required for Chrome/Edge to show the native dialog
+      e.returnValue = '';
     };
     window.addEventListener('beforeunload', this.boundBeforeUnload);
 
     this.boundPopState = (_e: PopStateEvent) => {
-      // Re-push so the user can never actually navigate away via back/forward
       history.pushState({ navigationLocked: true }, '', window.location.href);
       this.ngZone.run(() => {
         window.dispatchEvent(new CustomEvent('nav-lock-triggered'));
@@ -36,8 +36,17 @@ export class NavigationLockService {
   unlock(): void {
     if (!this.isLocked) return;
     this.isLocked = false;
-    window.removeEventListener('beforeunload', this.boundBeforeUnload);
-    window.removeEventListener('popstate', this.boundPopState);
+    this.targetUrl = '';
+
+    if (this.boundBeforeUnload) {
+      window.removeEventListener('beforeunload', this.boundBeforeUnload);
+    }
+    if (this.boundPopState) {
+      window.removeEventListener('popstate', this.boundPopState);
+    }
+    if (history.state && history.state.navigationLocked) {
+      history.replaceState({}, '', window.location.href);
+    }
   }
 
   getTargetUrl(): string  { return this.targetUrl; }

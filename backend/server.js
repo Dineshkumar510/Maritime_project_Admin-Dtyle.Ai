@@ -12,15 +12,28 @@ const app  = express();
 const PORT = process.env.PORT || 4000;
 
 const allowedOrigins = [
-  'http://localhost:4200',
   process.env.ANGULAR_APP_URL,
   process.env.NEXT_APP_URL,
+  process.env.ADMIN_TUNNEL_URL, 
 ].filter(Boolean);
+
+const allowedOriginPatterns = [
+  /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/,
+  /^https:\/\/[a-z0-9-]+\.ngrok-free\.app$/,
+  /^https:\/\/[a-z0-9-]+\.ngrok\.io$/,
+];
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;                             
+  if (allowedOrigins.includes(origin)) return true;
+  return allowedOriginPatterns.some(rx => rx.test(origin));
+}
 
 app.use(cors({
   origin(origin, cb) {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    cb(new Error(`CORS: origin ${origin} not allowed`));
+    if (isAllowedOrigin(origin)) return cb(null, true);
+    console.warn(`[CORS] Rejected origin: ${origin}`);
+    return cb(null, false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

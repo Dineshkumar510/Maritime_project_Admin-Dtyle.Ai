@@ -15,6 +15,17 @@ const NEXT_APP_URL = process.env.NEXT_APP_URL;
 const ANGULAR_URL = process.env.ANGULAR_APP_URL;
 const IS_PROD = process.env.NODE_ENV === "production";
 
+const CROSS_SITE = process.env.CROSS_SITE_COOKIES === "true" || IS_PROD;
+
+function cookieBase() {
+  return {
+    httpOnly: true,
+    secure: CROSS_SITE,
+    sameSite: CROSS_SITE ? "None" : "Lax",
+    path: "/",
+  };
+}
+
 function buildPayload(user) {
   return {
     id: user.id,
@@ -34,30 +45,23 @@ function signAccess(payload) {
 }
 
 function setCookies(res, accessToken, refreshToken) {
-  const base = { httpOnly: true, secure: IS_PROD, path: "/" };
+  const base = cookieBase();
 
   res.cookie("auth_token", accessToken, {
     ...base,
-    sameSite: IS_PROD ? "None" : "Lax",
     maxAge: 12 * 60 * 60 * 1000,
   });
 
   if (refreshToken) {
     res.cookie("refresh_token", refreshToken, {
       ...base,
-      sameSite: IS_PROD ? "None" : "Lax",
       maxAge: REFRESH_DAYS * 24 * 60 * 60 * 1000,
     });
   }
 }
 
 function clearCookies(res) {
-  const opts = {
-    httpOnly: true,
-    secure: IS_PROD,
-    sameSite: IS_PROD ? "None" : "Lax",
-    path: "/",
-  };
+  const opts = cookieBase();
   res.clearCookie("auth_token", opts);
   res.clearCookie("refresh_token", opts);
 }
@@ -230,11 +234,8 @@ router.post("/generate-token", requireAuth, async (req, res) => {
     delete ssoPayload.iat;
 
     const ssoToken = jwt.sign(ssoPayload, JWT_SECRET, { expiresIn: "5m" });
-
-    // 🔐 Decrypt the stored redirect_url before using it — it is AES-encrypted at rest
     const plainRedirectUrl = decrypt(ship.redirect_url);
 
-    // Extract dynamic Host/Origin so each ship correctly targets its own Cloudflare tunnel
     let targetOrigin = NEXT_APP_URL;
     let targetPath = plainRedirectUrl;
 
