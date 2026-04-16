@@ -26,9 +26,7 @@
       </svg>
       {{ currentTime }} UTC
     </div>
-
     <div class="cmd-bar__divider"></div>
-
     <button class="cmd-bar__btn cmd-bar__btn--secondary" (click)="showWarning = true">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
         <path d="M10 19l-7-7 7-7M3 12h18" stroke="currentColor" stroke-width="2"
@@ -41,117 +39,102 @@
 
 <div class="viewer-shell" [class.viewer-shell--offset]="bannerVisible">
 
-  <!-- ── Loading Overlay ── -->
-  <div class="loading-overlay" *ngIf="isLoading && !decryptError">
-  <div class="sk-shell">
-
-    <!-- Top Navbar Skeleton -->
-    <div class="sk-topbar">
-      <div class="sk sk-logo"></div>
-      <div class="sk sk-brand-text"></div>
-      <div class="sk-topbar-right">
-        <div class="sk sk-date-pill"></div>
-        <div class="sk sk-avatar"></div>
-      </div>
-    </div>
-
-    <!-- Body: Sidebar + Content -->
-    <div class="sk-body">
-
-      <!-- Left Sidebar Skeleton -->
-      <div class="sk-sidebar">
-        <div class="sk sk-sidebar-active-item"></div>
-        <div class="sk-sidebar-section-label">
-          <div class="sk sk-sidebar-label"></div>
-        </div>
-        <div class="sk-nav-list">
-          <div class="sk-nav-row" *ngFor="let w of [90, 70, 60, 80, 65, 75]">
-            <div class="sk sk-nav-icon"></div>
-            <div class="sk sk-nav-text" [style.width.%]="w"></div>
-          </div>
+  <!-- ── Loading / Skeleton Overlay ── -->
+  <div class="loading-overlay" *ngIf="isLoading && !decryptError && !urlUnreachable">
+    <div class="sk-shell">
+      <div class="sk-topbar">
+        <div class="sk sk-logo"></div>
+        <div class="sk sk-brand-text"></div>
+        <div class="sk-topbar-right">
+          <div class="sk sk-date-pill"></div>
+          <div class="sk sk-avatar"></div>
         </div>
       </div>
-
-      <!-- Main Content Skeleton -->
-      <div class="sk-content">
-
-        <!-- Page Title -->
-        <div class="sk-title-block">
-          <div class="sk-l sk-page-title"></div>
-          <div class="sk-l sk-page-sub"></div>
-        </div>
-
-        <!-- Stat Cards Row -->
-        <div class="sk-stat-grid">
-          <div class="sk-stat-card" *ngFor="let _ of [1,2,3,4]">
-            <div class="sk-stat-top">
-              <div class="sk-l sk-stat-label"></div>
-              <div class="sk-l sk-stat-icon"></div>
-            </div>
-            <div class="sk-l sk-stat-num"></div>
-            <div class="sk-l sk-stat-sub"></div>
+      <div class="sk-body">
+        <div class="sk-sidebar">
+          <div class="sk sk-sidebar-active-item"></div>
+          <div class="sk-sidebar-section-label">
+            <div class="sk sk-sidebar-label"></div>
           </div>
-        </div>
-
-        <!-- Alert Panels Row -->
-        <div class="sk-panel-grid">
-          <div class="sk-panel" *ngFor="let _ of [1,2]">
-            <div class="sk-panel-head">
-              <div class="sk-l sk-panel-icon-sm"></div>
-              <div class="sk-l sk-panel-title"></div>
-              <div class="sk-l sk-panel-badge"></div>
-            </div>
-            <div class="sk-panel-empty">
-              <div class="sk-l sk-panel-empty-icon"></div>
-              <div class="sk-l sk-panel-empty-msg"></div>
+          <div class="sk-nav-list">
+            <div class="sk-nav-row" *ngFor="let w of [90, 70, 60, 80, 65, 75]">
+              <div class="sk sk-nav-icon"></div>
+              <div class="sk sk-nav-text" [style.width.%]="w"></div>
             </div>
           </div>
         </div>
-
-        <!-- Analytics Row -->
-        <div class="sk-panel-grid">
-          <!-- Use Case Analytics -->
-          <div class="sk-panel">
-            <div class="sk-panel-head">
-              <div class="sk-l sk-panel-icon-sm"></div>
-              <div class="sk-l sk-panel-title" style="width:130px;"></div>
-            </div>
-            <div class="sk-an-row" *ngFor="let w of [100, 80, 70, 90, 60]">
-              <div class="sk-l sk-an-label"></div>
-              <div class="sk-l sk-an-sub"></div>
-              <div class="sk-l sk-an-bar"></div>
+        <div class="sk-content">
+          <div class="sk-title-block">
+            <div class="sk-l sk-page-title"></div>
+            <div class="sk-l sk-page-sub"></div>
+          </div>
+          <div class="sk-stat-grid">
+            <div class="sk-stat-card" *ngFor="let _ of [1,2,3,4]">
+              <div class="sk-stat-top">
+                <div class="sk-l sk-stat-label"></div>
+                <div class="sk-l sk-stat-icon"></div>
+              </div>
+              <div class="sk-l sk-stat-num"></div>
+              <div class="sk-l sk-stat-sub"></div>
             </div>
           </div>
-          <!-- Incident Metrics -->
-          <div class="sk-panel">
-            <div class="sk-panel-head">
-              <div class="sk-l sk-panel-icon-sm"></div>
-              <div class="sk-l sk-panel-title" style="width:160px;"></div>
+          <div class="sk-panel-grid">
+            <div class="sk-panel" *ngFor="let _ of [1,2]">
+              <div class="sk-panel-head">
+                <div class="sk-l sk-panel-icon-sm"></div>
+                <div class="sk-l sk-panel-title"></div>
+                <div class="sk-l sk-panel-badge"></div>
+              </div>
+              <div class="sk-panel-empty">
+                <div class="sk-l sk-panel-empty-icon"></div>
+                <div class="sk-l sk-panel-empty-msg"></div>
+              </div>
             </div>
-            <div class="sk-metric-row" *ngFor="let _ of [1,2,3]">
-              <div class="sk-metric-left">
-                <div class="sk-l sk-metric-icon"></div>
-                <div>
-                  <div class="sk-l sk-metric-label"></div>
-                  <div class="sk-l sk-metric-sub"></div>
+          </div>
+          <div class="sk-panel-grid">
+            <div class="sk-panel">
+              <div class="sk-panel-head">
+                <div class="sk-l sk-panel-icon-sm"></div>
+                <div class="sk-l sk-panel-title" style="width:130px;"></div>
+              </div>
+              <div class="sk-an-row" *ngFor="let w of [100, 80, 70, 90, 60]">
+                <div class="sk-l sk-an-label"></div>
+                <div class="sk-l sk-an-sub"></div>
+                <div class="sk-l sk-an-bar"></div>
+              </div>
+            </div>
+            <div class="sk-panel">
+              <div class="sk-panel-head">
+                <div class="sk-l sk-panel-icon-sm"></div>
+                <div class="sk-l sk-panel-title" style="width:160px;"></div>
+              </div>
+              <div class="sk-metric-row" *ngFor="let _ of [1,2,3]">
+                <div class="sk-metric-left">
+                  <div class="sk-l sk-metric-icon"></div>
+                  <div>
+                    <div class="sk-l sk-metric-label"></div>
+                    <div class="sk-l sk-metric-sub"></div>
+                  </div>
+                </div>
+                <div class="sk-metric-right">
+                  <div class="sk-l sk-metric-value"></div>
+                  <div class="sk-l sk-metric-bar"></div>
                 </div>
               </div>
-              <div class="sk-metric-right">
-                <div class="sk-l sk-metric-value"></div>
-                <div class="sk-l sk-metric-bar"></div>
-              </div>
             </div>
           </div>
         </div>
-
+      </div>
+      <div class="sk-status-bar">
+        <div class="sk-status-dot"></div>
+        <span class="sk-status-text">Establishing connection to <strong>{{ shipName }}</strong>…</span>
       </div>
     </div>
   </div>
-</div>
 
   <!-- ── Iframe ── -->
   <iframe
-    *ngIf="!decryptError && targetUrl"
+    *ngIf="!decryptError && !urlUnreachable && safeUrl"
     [src]="safeUrl"
     class="main-iframe"
     frameborder="0"
@@ -171,20 +154,104 @@
     </div>
     <h3 class="error-title">Navigation Token Invalid</h3>
     <p class="error-body">The session token could not be verified. This link may have expired or been tampered with.</p>
-    <button class="btn-primary" (click)="returnToDashboard()">
-      Return to Fleet Dashboard
-    </button>
+    <button class="btn-primary" (click)="returnToDashboard()">Return to Fleet Dashboard</button>
+  </div>
+
+  <div class="ur-scene" *ngIf="urlUnreachable">
+
+    <!-- Animated sonar canvas -->
+    <div class="ur-canvas">
+      <div class="ur-grid"></div>
+      <div class="ur-sonar">
+        <div class="ur-sonar__ring ur-sonar__ring--1"></div>
+        <div class="ur-sonar__ring ur-sonar__ring--2"></div>
+        <div class="ur-sonar__ring ur-sonar__ring--3"></div>
+        <div class="ur-sonar__ring ur-sonar__ring--4"></div>
+        <div class="ur-sonar__sweep"></div>
+        <div class="ur-sonar__core"></div>
+      </div>
+      <div class="ur-vignette"></div>
+    </div>
+
+    <!-- Floating card -->
+    <div class="ur-card">
+      <div class="ur-card__bar"></div>
+
+      <div class="ur-card__inner">
+
+        <!-- Status row -->
+        <div class="ur-status">
+          <span class="ur-status__dot"></span>
+          <span class="ur-status__label">TRANSMISSION LOST</span>
+          <span class="ur-status__code">ERR_TUNNEL_OFFLINE</span>
+        </div>
+
+        <!-- Big heading + ship name -->
+        <div class="ur-hero">
+          <h1 class="ur-hero__title">Vessel<br>Unreachable</h1>
+          <div class="ur-hero__ship">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M3 17l4-8 5 3 4-6 5 11H3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+            {{ shipName }}
+          </div>
+        </div>
+
+        <!-- Description -->
+        <p class="ur-desc">
+          Cannot establish a connection to the vessel interface.
+          The tunnel server may be offline or the URL is unreachable.
+        </p>
+
+
+        <!-- Divider -->
+        <div class="ur-divider"></div>
+
+        <!-- Checklist -->
+        <ul class="ur-checklist">
+          <li>
+            <svg class="ur-check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Verify tunnel server is running and forwarding correctly
+          </li>
+          <li>
+            <svg class="ur-check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Confirm vessel network is online and reachable
+          </li>
+        </ul>
+
+        <!-- Actions -->
+        <div class="ur-actions">
+          <button class="ur-btn ur-btn--retry" (click)="retryConnection()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Retry Connection
+          </button>
+          <button class="ur-btn ur-btn--dash" (click)="returnToDashboard()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M10 19l-7-7 7-7M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Fleet Dashboard
+          </button>
+        </div>
+
+      </div>
+    </div>
   </div>
 
 </div>
 
+<!-- ── Leave Session Modal ── -->
 <div class="modal-backdrop" *ngIf="showWarning" (click)="dismissWarning()">
   <div class="modal-card" (click)="$event.stopPropagation()">
-
-    <!-- Top accent bar -->
     <div class="modal-accent-bar"></div>
-
-    <!-- Icon -->
     <div class="modal-icon-wrap">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
         <path d="M12 9v4M12 17h.01" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>
@@ -192,19 +259,15 @@
               stroke="#f59e0b" stroke-width="1.8"/>
       </svg>
     </div>
-
     <h3 class="modal-title">Leave Active Session?</h3>
-
     <div class="modal-vessel-badge">
       <div class="vessel-indicator vessel-indicator--sm"></div>
       {{ shipName }}
     </div>
-
     <p class="modal-body">
       You are currently inside an active vessel interface. Navigating away will
       terminate the current session and return you to the fleet dashboard.
     </p>
-
     <div class="modal-actions">
       <button class="btn-secondary" (click)="dismissWarning()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
