@@ -1,18 +1,12 @@
-<!-- login.component.html — Maritime SSO Login (Angular, custom inputs replacing mat-form-field) -->
 <div class="dtl-root">
-  <!-- Three.js animated canvas background -->
   <canvas #bgCanvas class="dtl-bg-canvas"></canvas>
 
-  <!-- Main layout -->
   <div class="dtl-layout">
-    <!-- ═══ LEFT PANEL ═══════════════════════════════════════════════════════ -->
     <div class="dtl-left">
-      <!-- Logo -->
       <div class="dtl-anim a1">
-        <img src="../../assets/Dtyle AI -Blue-text.png" alt="Dtyle.AI" style="height:75px">
+        <img src="assets/Dtyle AI -Blue-text.png" alt="Dtyle.AI" style="height:75px">
       </div>
 
-      <!-- Headline -->
       <div class="dtl-anim a2">
         <h1 class="dtl-heading">
           Making Vessels
@@ -26,7 +20,6 @@
         </p>
       </div>
 
-      <!-- Feature cards -->
       <div class="dtl-anim a3 dtl-features">
         <div class="dtl-feat">
           <div class="dtl-feat-icon">
@@ -71,7 +64,6 @@
         </div>
       </div>
 
-      <!-- Stats -->
       <div class="dtl-anim a4 dtl-stats">
         <div class="dtl-stat">
           <span class="dtl-stat-val">50+</span>
@@ -88,7 +80,6 @@
       </div>
     </div>
 
-    <!-- ═══ RIGHT PANEL — LOGIN CARD ════════════════════════════════════════ -->
     <div class="dtl-right">
       <div
         class="dtl-card dtl-card-anim"
@@ -96,18 +87,13 @@
         (mouseleave)="resetTilt()"
         #card
       >
-        <!-- Top accent line -->
         <div class="dtl-card-line"></div>
-
-        <!-- Corner glow -->
         <div class="dtl-card-glow"></div>
 
-        <!-- Mobile logo -->
         <div class="dtl-mobile-logo">
-          <img src="assets/images/Dtyle-AI-Blue-text.png" alt="Dtyle.AI" style="height:42px" />
+          <img src="assets/Dtyle AI -Blue-text.png" alt="Dtyle.AI" style="height:42px" />
         </div>
 
-        <!-- Header -->
         <div class="dtl-card-header">
           <div class="dtl-badge">
             <span class="dtl-badge-dot"></span>
@@ -117,14 +103,11 @@
           <p class="dtl-card-sub">Sign in to access your dashboard</p>
         </div>
 
-        <!-- Form -->
         <form [formGroup]="form" (ngSubmit)="submit()" novalidate autocomplete="off">
 
-          <!-- ── Email Address ── -->
           <div class="dtl-field-wrap" [class.dtl-field-error]="f['username'].touched && f['username'].errors?.['required']">
             <label class="dtl-label" for="dtl-email">Email Address</label>
             <div class="dtl-input-box">
-              <!-- Envelope icon -->
               <span class="dtl-prefix-icon">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <rect x="2" y="4" width="20" height="16" rx="3" />
@@ -145,11 +128,9 @@
             </span>
           </div>
 
-          <!-- ── Password ── -->
           <div class="dtl-field-wrap" [class.dtl-field-error]="f['password'].touched && f['password'].errors?.['required']">
             <label class="dtl-label" for="dtl-password">Password</label>
             <div class="dtl-input-box">
-              <!-- Lock icon -->
               <span class="dtl-prefix-icon">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <rect x="3" y="11" width="18" height="11" rx="2" />
@@ -164,19 +145,16 @@
                 placeholder="••••••••"
                 autocomplete="off"
               />
-              <!-- Toggle eye -->
               <button
                 type="button"
                 class="dtl-eye-btn"
                 (click)="hidePass.set(!hidePass())"
                 [attr.aria-label]="hidePass() ? 'Show password' : 'Hide password'"
               >
-                <!-- Eye open -->
                 <svg *ngIf="hidePass()" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                   <circle cx="12" cy="12" r="3"/>
                 </svg>
-                <!-- Eye off -->
                 <svg *ngIf="!hidePass()" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
                   <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
@@ -189,13 +167,11 @@
             </span>
           </div>
 
-          <!-- Error message -->
           <div class="dtl-error" *ngIf="error()">
             <span class="dtl-error-dot"></span>
             {{ error() }}
           </div>
 
-          <!-- Submit -->
           <button class="dtl-btn" type="submit" [disabled]="loading()">
             <mat-spinner *ngIf="loading()" diameter="17" class="dtl-spinner"></mat-spinner>
             <span>{{ loading() ? 'Authenticating…' : 'Sign In' }}</span>

@@ -31,7 +31,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('card') private cardRef!: ElementRef<HTMLDivElement>;
   @ViewChild('bgCanvas') private canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  // Three.js teardown handle
   private _destroyThree?: () => void;
 
   constructor(
@@ -42,7 +41,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private ngZone: NgZone,
   ) {}
 
-  // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
     if (this.auth.isLoggedIn()) {
@@ -65,7 +63,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // Run Three.js outside Angular's change-detection zone for performance
     this.ngZone.runOutsideAngular(() => this._initThreeJS());
   }
 
@@ -73,13 +70,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     this._destroyThree?.();
   }
 
-  // ── Form helpers ──────────────────────────────────────────────────────────
 
   get f() {
     return this.form.controls;
   }
-
-  // ── Card 3-D tilt (matches React handleCardMouseMove / handleCardMouseLeave) ──
 
   onTilt(event: MouseEvent): void {
     const card = this.cardRef?.nativeElement;
@@ -109,7 +103,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       '0 20px 60px rgba(0,80,160,0.1), 0 4px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.95)';
   }
 
-  // ── Submit ─────────────────────────────────────────────────────────────────
 
   submit(): void {
     this.form.markAllAsTouched();
@@ -122,7 +115,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.auth.login(username.trim(), password).subscribe({
       next: () => {
-        /* AuthService handles redirect */
       },
       error: (err: any) => {
         this.loading.set(false);
@@ -131,8 +123,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // ── Three.js 3-D Background ───────────────────────────────────────────────
-  // Mirrors the React useEffect in SignInForm.js 1-to-1.
 
   private _initThreeJS(): void {
     const canvas = this.canvasRef?.nativeElement;
@@ -141,14 +131,12 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     let destroyed = false;
     let animId = 0;
 
-    // Dynamic refs filled after THREE loads
     let renderer: any, scene: any, camera: any;
     let waveMesh: any, waveMesh2: any, particles: any;
     let sphere1: any, sphere2: any, torus: any, octa: any, icosa: any;
     let mouseX = 0,
       mouseY = 0;
 
-    /** Load three.js from CDN once, reuse if already loaded */
     const loadThree = (): Promise<any> =>
       new Promise((resolve) => {
         if ((window as any)['THREE']) {
@@ -166,7 +154,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       const T = await loadThree();
       if (destroyed) return;
 
-      // ── Scene & Camera ────────────────────────────────────────────────────
       scene = new T.Scene();
       camera = new T.PerspectiveCamera(
         52,
@@ -177,13 +164,11 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       camera.position.set(0, 30, 68);
       camera.lookAt(0, 0, 0);
 
-      // ── Renderer ──────────────────────────────────────────────────────────
       renderer = new T.WebGLRenderer({ canvas, alpha: true, antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setClearColor(0x000000, 0);
 
-      /** Cache original x/y of a PlaneGeometry for wave deformation */
       const storeXY = (geo: any): Float32Array => {
         const pos = geo.attributes.position;
         const xy = new Float32Array(pos.count * 2);
@@ -194,7 +179,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         return xy;
       };
 
-      // ── Primary wave ──────────────────────────────────────────────────────
       const wGeo = new T.PlaneGeometry(165, 115, 65, 45);
       waveMesh = new T.Mesh(
         wGeo,
@@ -210,7 +194,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       waveMesh.userData.xy = storeXY(wGeo);
       scene.add(waveMesh);
 
-      // ── Secondary wave ────────────────────────────────────────────────────
       const wGeo2 = new T.PlaneGeometry(165, 115, 32, 22);
       waveMesh2 = new T.Mesh(
         wGeo2,
@@ -226,7 +209,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       waveMesh2.userData.xy = storeXY(wGeo2);
       scene.add(waveMesh2);
 
-      // ── Particles ─────────────────────────────────────────────────────────
       const pCount = 220;
       const pGeo = new T.BufferGeometry();
       const pPos = new Float32Array(pCount * 3);
@@ -250,7 +232,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       scene.add(particles);
 
-      // ── Large wireframe globe ─────────────────────────────────────────────
       sphere1 = new T.Mesh(
         new T.SphereGeometry(18, 20, 20),
         new T.MeshBasicMaterial({
@@ -263,7 +244,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       sphere1.position.set(-45, 6, -18);
       scene.add(sphere1);
 
-      // ── Small accent sphere ───────────────────────────────────────────────
       sphere2 = new T.Mesh(
         new T.SphereGeometry(9, 14, 14),
         new T.MeshBasicMaterial({
@@ -276,7 +256,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       sphere2.position.set(46, 12, -28);
       scene.add(sphere2);
 
-      // ── Torus (compass ring) ──────────────────────────────────────────────
       torus = new T.Mesh(
         new T.TorusGeometry(11, 0.35, 10, 48),
         new T.MeshBasicMaterial({
@@ -290,7 +269,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       torus.rotation.x = Math.PI / 2.8;
       scene.add(torus);
 
-      // ── Octahedron ────────────────────────────────────────────────────────
       octa = new T.Mesh(
         new T.OctahedronGeometry(5.5, 1),
         new T.MeshBasicMaterial({
@@ -303,7 +281,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       octa.position.set(-24, 10, 18);
       scene.add(octa);
 
-      // ── Icosahedron ───────────────────────────────────────────────────────
       icosa = new T.Mesh(
         new T.IcosahedronGeometry(4, 1),
         new T.MeshBasicMaterial({
@@ -316,7 +293,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       icosa.position.set(14, 18, 10);
       scene.add(icosa);
 
-      // ── Animation loop ────────────────────────────────────────────────────
       const clock = new T.Clock();
 
       const animate = () => {
@@ -324,7 +300,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         animId = requestAnimationFrame(animate);
         const t = clock.getElapsedTime();
 
-        // Primary wave deformation
         const wp = waveMesh.geometry.attributes.position;
         const xy = waveMesh.userData.xy as Float32Array;
         for (let i = 0; i < wp.count; i++) {
@@ -339,7 +314,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         wp.needsUpdate = true;
 
-        // Secondary wave deformation
         const wp2 = waveMesh2.geometry.attributes.position;
         const xy2 = waveMesh2.userData.xy as Float32Array;
         for (let i = 0; i < wp2.count; i++) {
@@ -353,7 +327,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         wp2.needsUpdate = true;
 
-        // Float particles vertically
         const pp = particles.geometry.attributes.position;
         const ph = particles.geometry.attributes.phase;
         for (let i = 0; i < pCount; i++) {
@@ -382,7 +355,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
       animate();
 
-      // ── Event listeners ───────────────────────────────────────────────────
       const onResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
