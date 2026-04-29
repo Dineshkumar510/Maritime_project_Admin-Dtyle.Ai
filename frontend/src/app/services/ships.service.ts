@@ -80,4 +80,14 @@ export class ShipsService {
       }>(`${this.api}/${id}`, fd, { withCredentials: true })
       .pipe(catchError((err) => throwError(() => err)));
   }
+
+  checkReachability(url: string, timeoutMs = 6000): Promise<boolean> {
+  if (!url) return Promise.resolve(false);
+  const ctrl  = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  return fetch(url, { mode: 'no-cors', signal: ctrl.signal, cache: 'no-store' })
+    .then(() => true)
+    .catch(() => false)
+    .finally(() => clearTimeout(timer));
+}
 }

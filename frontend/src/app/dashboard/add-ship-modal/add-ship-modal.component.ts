@@ -59,7 +59,6 @@ export class AddShipModalComponent implements OnInit, AfterViewInit {
       name:         [this.shipToEdit?.name        || '', [Validators.required]],
       redirect_url: [existingUrl,                        [Validators.required]],
       description:  [this.shipToEdit?.description || ''],
-      status:       [this.shipToEdit?.status      || 'active', [Validators.required]],
       image_url:    [this.shipToEdit?.image_url   || ''],
     });
 
@@ -72,17 +71,14 @@ export class AddShipModalComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // In edit mode (or if URL was pre-filled), show encrypted string immediately
     if (this.realUrlValue() && this.urlInputRef) {
       this.urlInputRef.nativeElement.value = this.encryptForDisplay(this.realUrlValue());
     }
   }
 
-  // ── URL field event handlers ───────────────────────────────────────
 
   onUrlFocus(): void {
     this.urlFocused.set(true);
-    // Reveal the real URL so the user can edit it
     this.urlInputRef.nativeElement.value = this.realUrlValue();
   }
 
@@ -93,26 +89,19 @@ export class AddShipModalComponent implements OnInit, AfterViewInit {
     this.form.patchValue({ redirect_url: val });
     this.form.get('redirect_url')?.markAsTouched();
     this.urlFocused.set(false);
-
-    // Convert to encrypted display the moment user leaves the field
     this.urlInputRef.nativeElement.value = val
       ? this.encryptForDisplay(val)
       : '';
   }
 
   onUrlInput(event: Event): void {
-    // While typing: keep real value + form control in sync
     const val = (event.target as HTMLInputElement).value;
     this.realUrlValue.set(val);
     this.urlHasValue.set(!!val);
     this.form.patchValue({ redirect_url: val });
   }
 
-  /**
-   * Deterministic visual cipher — same input always produces the same display.
-   * Output format: colon-separated 4-char hex blocks
-   * e.g. "https://ship.example.com" → "4a3f:2b1c:9e4d:8a5f:..."
-   */
+
   encryptForDisplay(url: string): string {
     if (!url) return '';
     const hex = '0123456789abcdef';
@@ -124,8 +113,6 @@ export class AddShipModalComponent implements OnInit, AfterViewInit {
     }
     return (raw.match(/.{1,4}/g) || []).join(':');
   }
-
-  // ── Image ─────────────────────────────────────────────────────────
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -143,8 +130,6 @@ export class AddShipModalComponent implements OnInit, AfterViewInit {
     this.form.patchValue({ image_url: '' });
   }
 
-  // ── Submit ────────────────────────────────────────────────────────
-
   submit(): void {
     if (this.form.invalid || this.loading()) return;
     this.loading.set(true);
@@ -152,9 +137,8 @@ export class AddShipModalComponent implements OnInit, AfterViewInit {
 
     const payload: AddShipPayload = {
       name:         this.form.value.name,
-      redirect_url: this.form.value.redirect_url,   // real URL sent to backend
+      redirect_url: this.form.value.redirect_url,
       description:  this.form.value.description,
-      status:       this.form.value.status,
     };
 
     if (this.selectedFile())            payload.image     = this.selectedFile()!;

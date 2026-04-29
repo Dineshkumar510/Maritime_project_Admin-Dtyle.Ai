@@ -40,15 +40,41 @@ export class DashboardComponent implements OnInit {
     private urlCrypto: UrlCryptoService,
   ) {}
 
-  ngOnInit(): void { this.loadShips(); }
+  ngOnInit(): void {
+     this.loadShips();
+     setInterval(() => this.refreshStatuses(), 60_000);
+    }
 
-  loadShips(): void {
-    this.loading.set(true);
-    this.shipsService.getShips().subscribe({
-      next: (r) => { this.ships.set(r.ships); this.loading.set(false); },
-      error: () => { this.loading.set(false); this.showToast('Failed to load ships', 'error'); },
+loadShips(): void {
+  this.loading.set(true);
+  this.shipsService.getShips().subscribe({
+    next: (r) => {
+      const ships = r.ships.map(s => ({ ...s, status: 'inactive' as Ship['status'] }));
+      this.ships.set(ships);
+      this.loading.set(false);
+      this.refreshStatuses();
+    },
+    error: () => {
+      this.loading.set(false);
+      this.showToast('Failed to load ships', 'error');
+    },
+  });
+}
+
+private refreshStatuses(): void {
+  this.ships().forEach(ship => {
+    this.shipsService.checkReachability(ship.redirect_url).then(reachable => {
+      this.ships.update(list =>
+        list.map(s =>
+          s.id === ship.id
+            ? { ...s, status: (reachable ? 'active' : 'inactive') as Ship['status'] }
+            : s,
+        ),
+      );
+      this.cdr.markForCheck();
     });
-  }
+  });
+}
 
   get activeCount():      number { return this.ships().filter(s => s.status === 'active').length; }
   get maintenanceCount(): number { return this.ships().filter(s => s.status === 'maintenance').length; }

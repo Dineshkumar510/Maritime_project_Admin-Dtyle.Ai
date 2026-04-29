@@ -83,40 +83,6 @@
       ></textarea>
     </div>
 
-    <!-- ─ Status ─ -->
-    <div class="dtl-field">
-      <label class="dtl-label">
-        <mat-icon class="dtl-label__icon">flag</mat-icon>
-        Operational Status <span class="req">*</span>
-      </label>
-      <div class="dtl-status-group">
-        <label
-          class="dtl-status-option dtl-status-option--active"
-          [class.selected]="form.get('status')?.value === 'active'"
-        >
-          <input type="radio" formControlName="status" value="active" hidden />
-          <span class="status-dot"></span>
-          <span>Active</span>
-        </label>
-        <label
-          class="dtl-status-option dtl-status-option--maintenance"
-          [class.selected]="form.get('status')?.value === 'maintenance'"
-        >
-          <input type="radio" formControlName="status" value="maintenance" hidden />
-          <span class="status-dot"></span>
-          <span>Maintenance</span>
-        </label>
-        <label
-          class="dtl-status-option dtl-status-option--inactive"
-          [class.selected]="form.get('status')?.value === 'inactive'"
-        >
-          <input type="radio" formControlName="status" value="inactive" hidden />
-          <span class="status-dot"></span>
-          <span>Inactive</span>
-        </label>
-      </div>
-    </div>
-
     <!-- ─ Ship Image ─ -->
     <div class="dtl-field">
       <label class="dtl-label">
