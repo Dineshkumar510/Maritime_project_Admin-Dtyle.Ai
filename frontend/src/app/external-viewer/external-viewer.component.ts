@@ -10,6 +10,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { NavigationLockService } from '../services/navigation-lock.service';
 import { UrlCryptoService } from '../services/url-crypto.service.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-external-viewer',
@@ -18,30 +19,41 @@ import { UrlCryptoService } from '../services/url-crypto.service.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExternalViewerComponent implements OnInit, OnDestroy {
-  targetUrl      = '';
-  shipName       = 'External System';
-  safeUrl!: SafeResourceUrl;
-  bannerVisible  = false;
-  showWarning    = false;
-  isLoading      = true;
-  decryptError   = false;
-  urlUnreachable = false;
-  currentTime    = '';
+  targetUrl= '';
+  shipName='External System';
+  safeUrl!:SafeResourceUrl;
+  bannerVisible= false;
+  showWarning=false;
+  isLoading=true;
+  isFadingOut=false;
+  decryptError=false;
+  urlUnreachable=false;
+  currentTime='';
 
-  private navLockListener!: EventListener;
-  private clockInterval!:   ReturnType<typeof setInterval>;
-  private loadingTimeout!:  ReturnType<typeof setTimeout>;
-  private bannerTimeout!:   ReturnType<typeof setTimeout>;
-  private paramsSub?: Subscription;
+  private readonly SETTLE_MS = 2000;
+  private readonly HARD_CEILING_MS = 25000;
+  private readonly FADE_OUT_MS = 320;
+
+  private navLockListener!:EventListener;
+  private vesselReadyListener?:(e: MessageEvent) => void;
+  private clockInterval!:ReturnType<typeof setInterval>;
+  private settleTimer?:ReturnType<typeof setTimeout>;
+  private hardCeilingTimer?:ReturnType<typeof setTimeout>;
+  private fadeTimer?:ReturnType<typeof setTimeout>;
+  private bannerTimeout!:ReturnType<typeof setTimeout>;
+  private paramsSub?:Subscription;
   private locked = false;
 
+  private currentShipId: number | null = null;
+
   constructor(
-    private route:      ActivatedRoute,
-    private router:     Router,
-    private sanitizer:  DomSanitizer,
-    private navLock:    NavigationLockService,
-    private cdr:        ChangeDetectorRef,
-    private urlCrypto:  UrlCryptoService,
+    private route:ActivatedRoute,
+    private router:Router,
+    private sanitizer:DomSanitizer,
+    private navLock:NavigationLockService,
+    private cdr:ChangeDetectorRef,
+    private urlCrypto:UrlCryptoService,
+    private auth:AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +73,13 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     };
     window.addEventListener('nav-lock-triggered', this.navLockListener);
+    this.vesselReadyListener = (e: MessageEvent) => {
+      const data: any = e?.data;
+      if (data && typeof data === 'object' && data.type === 'dtyle:vessel-ready') {
+        this.beginFadeOut();
+      }
+    };
+    window.addEventListener('message', this.vesselReadyListener);
 
     this.paramsSub = this.route.queryParams.subscribe(async params => {
       const token = params['data'] || '';
@@ -68,6 +87,7 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
       this.decryptError   = false;
       this.urlUnreachable = false;
       this.isLoading      = true;
+      this.isFadingOut    = false;
       this.cdr.markForCheck();
 
       if (!token) {
@@ -77,7 +97,7 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const decoded = this.urlCrypto.decrypt(token);
+      const decoded = this.urlCrypto.decryptShipRef(token);
       if (!decoded) {
         this.decryptError = true;
         this.isLoading    = false;
@@ -86,11 +106,26 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.targetUrl = decoded.url;
-      this.shipName  = decoded.name;
+      this.shipName       = decoded.name;
+      this.currentShipId  = decoded.shipId;
+      this.cdr.markForCheck();
+      await this.loadFreshSsoUrlAndRender(decoded.shipId);
+    });
+  }
+
+  private async loadFreshSsoUrlAndRender(shipId: number): Promise<void> {
+    try {
+      const res = await this.auth.generateShipToken(shipId).toPromise();
+      if (!res || !res.success || !res.ssoUrl) {
+        this.urlUnreachable = true;
+        this.isLoading      = false;
+        this.cdr.markForCheck();
+        return;
+      }
+
+      this.targetUrl = res.ssoUrl;
       this.cdr.markForCheck();
 
-      // Pre-flight connectivity check
       const reachable = await this.checkUrl(this.targetUrl);
       if (!reachable) {
         this.urlUnreachable = true;
@@ -107,12 +142,13 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
         this.locked = true;
       }
 
-      clearTimeout(this.loadingTimeout);
-      this.loadingTimeout = setTimeout(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }, 8000);
-    });
+      this.armHardCeiling();
+    } catch (err) {
+      console.error('[ExternalViewer] generateShipToken failed:', err);
+      this.urlUnreachable = true;
+      this.isLoading      = false;
+      this.cdr.markForCheck();
+    }
   }
 
   ngOnDestroy(): void {
@@ -121,16 +157,41 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
       this.locked = false;
     }
     window.removeEventListener('nav-lock-triggered', this.navLockListener);
+    if (this.vesselReadyListener) {
+      window.removeEventListener('message', this.vesselReadyListener);
+    }
     clearInterval(this.clockInterval);
-    clearTimeout(this.loadingTimeout);
+    clearTimeout(this.settleTimer);
+    clearTimeout(this.hardCeilingTimer);
+    clearTimeout(this.fadeTimer);
     clearTimeout(this.bannerTimeout);
     this.paramsSub?.unsubscribe();
   }
 
   onIframeLoad(): void {
-    clearTimeout(this.loadingTimeout);
-    this.isLoading = false;
+    if (!this.isLoading) return;
+    clearTimeout(this.settleTimer);
+    this.settleTimer = setTimeout(() => this.beginFadeOut(), this.SETTLE_MS);
+  }
+
+  private beginFadeOut(): void {
+    if (!this.isLoading || this.isFadingOut) return;
+    clearTimeout(this.settleTimer);
+    clearTimeout(this.hardCeilingTimer);
+    this.isFadingOut = true;
     this.cdr.markForCheck();
+
+    clearTimeout(this.fadeTimer);
+    this.fadeTimer = setTimeout(() => {
+      this.isLoading   = false;
+      this.isFadingOut = false;
+      this.cdr.markForCheck();
+    }, this.FADE_OUT_MS);
+  }
+
+  private armHardCeiling(): void {
+    clearTimeout(this.hardCeilingTimer);
+    this.hardCeilingTimer = setTimeout(() => this.beginFadeOut(), this.HARD_CEILING_MS);
   }
 
   dismissWarning(): void { this.showWarning = false; this.cdr.markForCheck(); }
@@ -153,24 +214,19 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
   }
 
   retryConnection(): void {
+    if (this.currentShipId == null) {
+      this.urlUnreachable = true;
+      this.cdr.markForCheck();
+      return;
+    }
     this.urlUnreachable = false;
     this.isLoading      = true;
+    this.isFadingOut    = false;
+    clearTimeout(this.settleTimer);
+    clearTimeout(this.hardCeilingTimer);
+    clearTimeout(this.fadeTimer);
     this.cdr.markForCheck();
-
-    this.checkUrl(this.targetUrl).then(ok => {
-      if (ok) {
-        this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.targetUrl);
-        clearTimeout(this.loadingTimeout);
-        this.loadingTimeout = setTimeout(() => {
-          this.isLoading = false;
-          this.cdr.markForCheck();
-        }, 8000);
-      } else {
-        this.urlUnreachable = true;
-        this.isLoading      = false;
-      }
-      this.cdr.markForCheck();
-    });
+    this.loadFreshSsoUrlAndRender(this.currentShipId);
   }
 
   private async checkUrl(url: string): Promise<boolean> {
@@ -189,7 +245,7 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
     const now = new Date();
     this.currentTime = now.toLocaleTimeString('en-US', {
       hour: '2-digit', minute: '2-digit', second: '2-digit',
-      hour12: false, timeZone: 'UTC',
+      hour12: true, timeZone: 'Asia/Kolkata',
     });
   }
 }

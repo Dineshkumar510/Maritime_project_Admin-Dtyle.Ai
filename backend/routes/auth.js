@@ -10,7 +10,7 @@ const { decrypt } = require("../utils/crypto");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TTL = process.env.ACCESS_TOKEN_TTL || "12h";
-const REFRESH_DAYS = Number(process.env.REFRESH_TOKEN_TTL_DAYS || 7);
+const REFRESH_DAYS = Number(process.env.REFRESH_TOKEN_TTL_DAYS || 2);
 const NEXT_APP_URL = process.env.NEXT_APP_URL;
 const ANGULAR_URL = process.env.ANGULAR_APP_URL;
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -233,7 +233,7 @@ router.post("/generate-token", requireAuth, async (req, res) => {
     delete ssoPayload.exp;
     delete ssoPayload.iat;
 
-    const ssoToken = jwt.sign(ssoPayload, JWT_SECRET, { expiresIn: "5m" });
+    const ssoToken = jwt.sign(ssoPayload, JWT_SECRET, { expiresIn: "12h" });
     const plainRedirectUrl = decrypt(ship.redirect_url);
 
     let targetOrigin = NEXT_APP_URL;

@@ -24,7 +24,7 @@
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
         <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
       </svg>
-      {{ currentTime }} UTC
+      {{ currentTime }} IST
     </div>
     <div class="cmd-bar__divider"></div>
     <button class="cmd-bar__btn cmd-bar__btn--secondary" (click)="showWarning = true">
@@ -32,7 +32,7 @@
         <path d="M10 19l-7-7 7-7M3 12h18" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      Dashboard
+      Redirect to Dashboard
     </button>
   </div>
 </div>
@@ -40,7 +40,9 @@
 <div class="viewer-shell" [class.viewer-shell--offset]="bannerVisible">
 
   <!-- ── Loading / Skeleton Overlay ── -->
-  <div class="loading-overlay" *ngIf="isLoading && !decryptError && !urlUnreachable">
+  <div class="loading-overlay"
+       [class.loading-overlay--fading]="isFadingOut"
+       *ngIf="isLoading && !decryptError && !urlUnreachable">
     <div class="sk-shell">
       <div class="sk-topbar">
         <div class="sk sk-logo"></div>

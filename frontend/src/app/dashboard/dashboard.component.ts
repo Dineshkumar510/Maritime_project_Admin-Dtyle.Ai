@@ -23,10 +23,12 @@ export class DashboardComponent implements OnInit {
   darkMode    = signal(false);
 
   // Launch screen state
-  showLaunchScreen  = signal(false);
-  launchingShipName = '';
-  launchingShipIcon = '';
-  launchTargetUrl   = '';
+  showLaunchScreen   = signal(false);
+  launchingShipName  = '';
+  launchingShipIcon  = '';
+  launchingShipId: number | null = null;
+
+  launchTargetUrl = '';
 
   readonly year      = new Date().getFullYear();
   readonly skeletons = Array(6).fill(0);
@@ -41,76 +43,74 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-     this.loadShips();
-     setInterval(() => this.refreshStatuses(), 60_000);
-    }
+    this.loadShips();
+    setInterval(() => this.refreshStatuses(), 60_000);
+  }
 
-loadShips(): void {
-  this.loading.set(true);
-  this.shipsService.getShips().subscribe({
-    next: (r) => {
-      const ships = r.ships.map(s => ({ ...s, status: 'inactive' as Ship['status'] }));
-      this.ships.set(ships);
-      this.loading.set(false);
-      this.refreshStatuses();
-    },
-    error: () => {
-      this.loading.set(false);
-      this.showToast('Failed to load ships', 'error');
-    },
-  });
-}
-
-private refreshStatuses(): void {
-  this.ships().forEach(ship => {
-    this.shipsService.checkReachability(ship.redirect_url).then(reachable => {
-      this.ships.update(list =>
-        list.map(s =>
-          s.id === ship.id
-            ? { ...s, status: (reachable ? 'active' : 'inactive') as Ship['status'] }
-            : s,
-        ),
-      );
-      this.cdr.markForCheck();
+  loadShips(): void {
+    this.loading.set(true);
+    this.shipsService.getShips().subscribe({
+      next: (r) => {
+        const ships = r.ships.map(s => ({ ...s, status: 'inactive' as Ship['status'] }));
+        this.ships.set(ships);
+        this.loading.set(false);
+        this.refreshStatuses();
+      },
+      error: () => {
+        this.loading.set(false);
+        this.showToast('Failed to load ships', 'error');
+      },
     });
-  });
-}
+  }
 
-  get activeCount():      number { return this.ships().filter(s => s.status === 'active').length; }
+  private refreshStatuses(): void {
+    this.ships().forEach(ship => {
+      this.shipsService.checkReachability(ship.redirect_url).then(reachable => {
+        this.ships.update(list =>
+          list.map(s =>
+            s.id === ship.id
+              ? { ...s, status: (reachable ? 'active' : 'inactive') as Ship['status'] }
+              : s,
+          ),
+        );
+        this.cdr.markForCheck();
+      });
+    });
+  }
+
+  get activeCount(): number { return this.ships().filter(s => s.status === 'active').length; }
   get maintenanceCount(): number { return this.ships().filter(s => s.status === 'maintenance').length; }
-  get inactiveCount():    number { return this.ships().filter(s => s.status === 'inactive').length; }
-
+  get inactiveCount(): number { return this.ships().filter(s => s.status === 'inactive').length; }
 
   openShip(ship: Ship): void {
-  if (this.launchingId() !== null || ship.status !== 'active') return;
+    if (this.launchingId() !== null || ship.status !== 'active') return;
 
-  this.launchingId.set(ship.id);
-  this.cdr.markForCheck();
+    this.launchingId.set(ship.id);
+    this.launchingShipId   = ship.id;
+    this.launchingShipName = ship.name;
+    this.launchingShipIcon = ship.image_url || 'assets/default-ship.jpg';
+    this.cdr.markForCheck();
 
-  this.auth.generateShipToken(ship.id).subscribe({
-    next: (res) => {
-      this.launchingShipName = ship.name;
-      this.launchingShipIcon = ship.image_url || 'assets/default-ship.jpg';
-      this.launchTargetUrl   = res.ssoUrl;
-
-      setTimeout(() => {
-        this.showLaunchScreen.set(true);
-        this.cdr.markForCheck();
-      }, 350);
-    },
-    error: () => {
-      this.launchingId.set(null);
-      this.showToast('Failed to open ship dashboard', 'error');
+    setTimeout(() => {
+      this.showLaunchScreen.set(true);
       this.cdr.markForCheck();
-    },
-  });
-}
+    }, 350);
+  }
 
   onLaunched(): void {
     this.showLaunchScreen.set(false);
     this.launchingId.set(null);
     this.cdr.markForCheck();
-    const token = this.urlCrypto.encrypt(this.launchTargetUrl, this.launchingShipName);
+
+    if (this.launchingShipId == null) {
+      this.showToast('Could not launch vessel — missing reference', 'error');
+      return;
+    }
+
+    const token = this.urlCrypto.encryptShipRef(
+      this.launchingShipId,
+      this.launchingShipName,
+    );
     this.router.navigate(['/external'], {
       queryParams: { data: token },
     });

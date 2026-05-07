@@ -57,7 +57,6 @@
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* ─── Header ────────────────────────────────────────────────────────────── */
 .mcc-header {
   position: sticky; top: 0; z-index: 100;
   display: flex; align-items: center; gap: 24px;
@@ -139,10 +138,7 @@
 .add-btn:hover { filter: brightness(1.12); box-shadow: 0 6px 20px var(--accent-glow); transform: translateY(-1px); }
 .add-btn mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
-/* ─── Vessel Grid ─────────────────────────────────────────────────────── */
 .vessel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-
-/* ─── Vessel Card ─────────────────────────────────────────────────────── */
 .vessel-card {
   position: relative;
   background: var(--bg-card);
@@ -151,10 +147,9 @@
   box-shadow: var(--card-shadow);
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.2s ease;
 }
-.vessel-card:hover { transform: translateY(-5px); box-shadow: var(--card-shadow-hover); border-color: var(--accent-blue); }
+.vessel-card:hover { box-shadow: var(--card-shadow-hover); border-color: var(--accent-blue); }
 .vessel-card--launching { pointer-events: none; }
 
-/* ─ Image zone ─ */
 .vc-img-zone { position: relative; width: 100%; height: 190px; overflow: hidden; background: var(--bg-page); }
 .vc-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; display: block; }
 .vessel-card:hover .vc-img { transform: scale(1.06); }
@@ -164,7 +159,6 @@
   pointer-events: none;
 }
 
-/* ─── Status Badge — REDESIGNED ─────────────────────────────────────── */
 .vc-status {
   position: absolute; top: 12px; left: 12px;
   display: inline-flex; align-items: center; gap: 6px;
@@ -190,7 +184,6 @@
   pointer-events: none;
 }
 
-/* Active — green pill with pulsing ring */
 .vc-status--active {
   background: rgba(0, 184, 122, 0.18);
   color: #00e096;
@@ -317,7 +310,6 @@
 .coord-icon { font-size: 11px !important; width: 11px !important; height: 11px !important; }
 .vc-coords span { font-size: 0.72rem; letter-spacing: 0.03em; }
 
-/* ─── Connect Button ─────────────────────────────────────────────── */
 .vc-connect-btn {
   display: inline-flex;
   align-items: center;
@@ -347,7 +339,6 @@
 }
 .vc-connect-btn:active:not([disabled]) { transform: scale(0.97); }
 
-/* Maintenance state */
 .vc-connect-btn--maintenance {
   border-color: var(--status-maint);
   background: rgba(232, 136, 10, 0.1);
@@ -359,7 +350,6 @@
   box-shadow: 0 6px 18px rgba(232,136,10,0.3);
 }
 
-/* Inactive state */
 .vc-connect-btn--inactive {
   border-color: rgba(217, 48, 37, 0.4);
   background: rgba(217, 48, 37, 0.08);
@@ -370,7 +360,6 @@
 
 .vc-connect-btn[disabled] { cursor: not-allowed; opacity: 0.5; }
 
-/* Scan line hover effect */
 .vc-scanline {
   position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
@@ -379,7 +368,6 @@
 }
 .vessel-card:hover .vc-scanline { left: 160%; }
 
-/* ─── Skeleton ──────────────────────────────────────────────────────── */
 .vessel-card--skeleton { pointer-events: none; cursor: default; }
 .vessel-card--skeleton:hover { transform: none; box-shadow: var(--card-shadow); }
 .sk-img {
@@ -398,7 +386,6 @@
 .sk-name { width: 60%; } .sk-meta { width: 40%; }
 @keyframes skShimmer { 0% { background-position: 200% 0; } 100% { background-position: -100% 0; } }
 
-/* ─── Empty state ───────────────────────────────────────────────────── */
 .fleet-empty {
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; padding: 80px 32px; text-align: center;
@@ -415,7 +402,6 @@
 .fleet-empty h3 { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
 .fleet-empty p  { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 28px; max-width: 300px; }
 
-/* ─── Footer ────────────────────────────────────────────────────────── */
 .mcc-footer {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   padding: 20px 32px; font-size: 0.78rem; color: var(--text-muted);
@@ -423,7 +409,6 @@
 }
 .footer-dot { opacity: 0.4; }
 
-/* ─── Toast ──────────────────────────────────────────────────────────── */
 .mcc-toast {
   position: fixed; bottom: 28px; left: 50%;
   transform: translateX(-50%);
@@ -442,7 +427,6 @@
   to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
 }
 
-/* ─── Responsive ────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .mcc-header  { padding: 0 16px; }
   .mcc-main    { padding: 24px 16px; }
