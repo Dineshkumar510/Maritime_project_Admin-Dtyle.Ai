@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const authRoutes        = require('./routes/auth');
 const shipsRoutes       = require('./routes/ships');
+const profileRoutes     = require('./routes/profile');     // ← NEW
 const healthCheckRoutes = require('./routes/health');
 const path              = require('path');
 
@@ -14,7 +15,7 @@ const PORT = process.env.PORT || 4000;
 const allowedOrigins = [
   process.env.ANGULAR_APP_URL,
   process.env.NEXT_APP_URL,
-  process.env.ADMIN_TUNNEL_URL, 
+  process.env.ADMIN_TUNNEL_URL,
 ].filter(Boolean);
 
 const allowedOriginPatterns = [
@@ -24,7 +25,7 @@ const allowedOriginPatterns = [
 ];
 
 function isAllowedOrigin(origin) {
-  if (!origin) return true;                             
+  if (!origin) return true;
   if (allowedOrigins.includes(origin)) return true;
   return allowedOriginPatterns.some(rx => rx.test(origin));
 }
@@ -44,9 +45,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Static-serve uploaded images. The profile module's photo/logo URLs
+// are absolute https://host/uploads/<file> URLs that resolve here.
 app.use('/uploads',             express.static(path.join(__dirname, 'uploads')));
+
 app.use('/api',                 authRoutes);
 app.use('/api/ships',           shipsRoutes);
+app.use('/api/profile',         profileRoutes);            // ← NEW
 app.use('/api/health-check',    healthCheckRoutes);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));

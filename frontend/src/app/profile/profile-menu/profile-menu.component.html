@@ -1,0 +1,57 @@
+<div class="pm-root" #root>
+  <!-- Avatar trigger -->
+  <button
+    type="button"
+    class="pm-avatar"
+    [class.pm-avatar--open]="open"
+    (click)="toggle($event)"
+    [attr.aria-expanded]="open"
+    aria-haspopup="menu"
+    [matTooltip]="branding.name() || 'Account'"
+  >
+    <img
+      *ngIf="branding.hasAvatarPhoto(); else initial"
+      [src]="branding.profilePhotoUrl()!"
+      [alt]="branding.name() || 'Profile'"
+      class="pm-avatar__img"
+      (error)="$any($event.target).style.display='none'"
+    />
+    <ng-template #initial>
+      <span class="pm-avatar__initial">{{ branding.avatarInitial() }}</span>
+    </ng-template>
+  </button>
+
+  <!-- Dropdown -->
+  <div class="pm-dropdown" *ngIf="open" role="menu">
+    <!-- Header card: logo + name + email -->
+    <div class="pm-card">
+      <div class="pm-card__logo">
+        <img
+          [src]="branding.brandLogo()"
+          [alt]="branding.brandName()"
+          (error)="$any($event.target).src = branding.DEFAULT_LOGO"
+        />
+      </div>
+      <div class="pm-card__text">
+        <div class="pm-card__name">{{ branding.name() || 'Account' }}</div>
+        <div class="pm-card__email" [matTooltip]="branding.email()">
+          {{ branding.email() }}
+        </div>
+      </div>
+    </div>
+
+    <div class="pm-divider"></div>
+
+    <button class="pm-item" (click)="editProfile()" role="menuitem">
+      <mat-icon class="pm-item__icon">person</mat-icon>
+      <span>Edit Profile</span>
+    </button>
+
+    <div class="pm-divider"></div>
+
+    <button class="pm-item pm-item--danger" (click)="logout()" role="menuitem">
+      <mat-icon class="pm-item__icon">logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </div>
+</div>

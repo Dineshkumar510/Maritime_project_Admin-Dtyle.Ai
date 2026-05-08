@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 import { NavigationLockService } from '../services/navigation-lock.service';
 import { UrlCryptoService } from '../services/url-crypto.service.service';
 import { AuthService } from '../services/auth.service';
+import { BrandingService } from '../services/branding.service';
 
 @Component({
   selector: 'app-external-viewer',
@@ -54,6 +55,7 @@ export class ExternalViewerComponent implements OnInit, OnDestroy {
     private cdr:ChangeDetectorRef,
     private urlCrypto:UrlCryptoService,
     private auth:AuthService,
+    public  branding:BrandingService,    // ← exposed to template
   ) {}
 
   ngOnInit(): void {

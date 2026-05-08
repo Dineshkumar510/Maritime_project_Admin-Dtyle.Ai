@@ -26,6 +26,8 @@ import { LaunchTransitionComponent } from './launch-transition/launch-transition
 import { ExternalViewerComponent }   from './external-viewer/external-viewer.component';
 
 import { authInterceptor } from './interceptors/http.interceptor';
+import { EditProfileDialogComponent } from './profile/edit-profile-dialog/edit-profile-dialog.component';
+import { ProfileMenuComponent } from './profile/profile-menu/profile-menu.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,8 @@ import { authInterceptor } from './interceptors/http.interceptor';
     AddShipModalComponent,
     LaunchTransitionComponent,
     ExternalViewerComponent,
+    EditProfileDialogComponent,
+    ProfileMenuComponent,
   ],
   imports: [
     BrowserModule,

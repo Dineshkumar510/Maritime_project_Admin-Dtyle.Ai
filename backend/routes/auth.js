@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const pool = require("../db/pool");
 const { requireAuth } = require("../middleware/auth");
 const { decrypt } = require("../utils/crypto");
+const { getCurrentProfile } = require("./profile");                  // ← NEW
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TTL = process.env.ACCESS_TOKEN_TTL || "12h";
@@ -27,10 +28,11 @@ function cookieBase() {
 }
 
 function buildPayload(user) {
+  // JWT stays small — profile/branding fields are fetched via /profile/me.
   return {
     id: user.id,
     code: user.username,
-    name: user.username,
+    name: user.display_name || user.username,
     emailid: user.email,
     role: user.role,
     roleId: user.role_id,
@@ -46,12 +48,7 @@ function signAccess(payload) {
 
 function setCookies(res, accessToken, refreshToken) {
   const base = cookieBase();
-
-  res.cookie("auth_token", accessToken, {
-    ...base,
-    maxAge: 12 * 60 * 60 * 1000,
-  });
-
+  res.cookie("auth_token", accessToken, { ...base, maxAge: 12 * 60 * 60 * 1000 });
   if (refreshToken) {
     res.cookie("refresh_token", refreshToken, {
       ...base,
@@ -80,9 +77,7 @@ router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password)
-      return res
-        .status(400)
-        .json({ error: "Username and password are required" });
+      return res.status(400).json({ error: "Username and password are required" });
 
     const [rows] = await pool.execute(
       `SELECT * FROM maritime_admin
@@ -95,9 +90,7 @@ router.post("/login", async (req, res) => {
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
     if (user.is_locked)
-      return res
-        .status(401)
-        .json({ error: "Account locked — contact your administrator" });
+      return res.status(401).json({ error: "Account locked — contact your administrator" });
 
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
@@ -127,13 +120,18 @@ router.post("/login", async (req, res) => {
 
     const ssoUrl = `${NEXT_APP_URL}/api/sso?token=${encodeURIComponent(accessToken)}&redirectTo=/management-dashboard`;
 
+    // Hand the full profile (including new branding fields) back so the
+    // frontend can populate the BrandingService immediately, without an
+    // extra network round-trip.
+    const profile = await getCurrentProfile(user.id);                  // ← NEW
+
     return res.json({
       success: true,
       ssoUrl,
       token: accessToken,
-      user: {
+      user: profile || {                                                // ← NEW
         id: user.id,
-        name: user.username,
+        name: user.display_name || user.username,
         email: user.email,
         role: user.role,
       },
@@ -149,9 +147,7 @@ router.post("/logout", async (req, res) => {
   if (rawRefresh) {
     const hash = crypto.createHash("sha256").update(rawRefresh).digest("hex");
     await pool
-      .execute("UPDATE refresh_tokens SET revoked = 1 WHERE token_hash = ?", [
-        hash,
-      ])
+      .execute("UPDATE refresh_tokens SET revoked = 1 WHERE token_hash = ?", [hash])
       .catch(() => {});
   }
   clearCookies(res);
@@ -193,8 +189,7 @@ router.get("/validate-token", (req, res) => {
     req.headers.authorization?.replace(/^Bearer\s+/i, "") ||
     req.query.token;
 
-  if (!token)
-    return res.status(401).json({ valid: false, error: "No token provided" });
+  if (!token) return res.status(401).json({ valid: false, error: "No token provided" });
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -204,15 +199,22 @@ router.get("/validate-token", (req, res) => {
   }
 });
 
-router.get("/me", requireAuth, (req, res) => {
-  return res.json({ user: req.user });
+// /me now returns the full profile (incl. profile_photo_url, org_logo_url, org_name)
+// so the frontend can re-hydrate branding on every page refresh.
+router.get("/me", requireAuth, async (req, res) => {                 // ← UPDATED
+  try {
+    const profile = await getCurrentProfile(req.user.id);
+    if (!profile) return res.status(404).json({ error: "User not found" });
+    return res.json({ user: profile });
+  } catch (err) {
+    console.error("[GET /me]", err);
+    return res.status(500).json({ error: "Failed to load user" });
+  }
 });
 
 router.post("/logout-all", requireAuth, async (req, res) => {
   await pool
-    .execute("UPDATE refresh_tokens SET revoked = 1 WHERE admin_id = ?", [
-      req.user.id,
-    ])
+    .execute("UPDATE refresh_tokens SET revoked = 1 WHERE admin_id = ?", [req.user.id])
     .catch(() => {});
   clearCookies(res);
   return res.json({ success: true });

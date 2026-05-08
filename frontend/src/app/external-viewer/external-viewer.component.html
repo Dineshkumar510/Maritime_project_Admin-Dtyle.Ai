@@ -1,12 +1,16 @@
 <div class="cmd-bar" [class.cmd-bar--visible]="bannerVisible">
 
-  <!-- Left: Brand -->
+  <!-- Left: Brand (now bound to BrandingService) -->
   <div class="cmd-bar__brand">
     <div class="cmd-bar__logo">
-      <img src="../../assets/D-logo.png" alt="Dtyle.AI">
+      <img
+        [src]="branding.brandLogo()"
+        [alt]="branding.brandName()"
+        (error)="$any($event.target).src = branding.DEFAULT_LOGO"
+      >
     </div>
     <div class="cmd-bar__brand-text">
-      <span class="cmd-bar__app-name">Dtyle.AI</span>
+      <span class="cmd-bar__app-name">{{ branding.brandName() }}</span>
     </div>
   </div>
 
@@ -34,6 +38,9 @@
       </svg>
       Redirect to Dashboard
     </button>
+
+    <div class="cmd-bar__divider"></div>
+    <app-profile-menu></app-profile-menu>
   </div>
 </div>
 

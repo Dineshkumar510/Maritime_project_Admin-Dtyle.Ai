@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, ChangeDetectionStrategy, signal, ChangeDetectorRef
+  Component, OnInit, ChangeDetectionStrategy, signal, ChangeDetectorRef, inject,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { ShipsService, Ship } from '../services/ships.service';
 import { AddShipModalComponent } from './add-ship-modal/add-ship-modal.component';
 import { UrlCryptoService } from '../services/url-crypto.service.service';
+import { BrandingService } from '../services/branding.service';                 // ← NEW
 
 @Component({
   selector: 'app-dashboard',
@@ -27,11 +28,13 @@ export class DashboardComponent implements OnInit {
   launchingShipName  = '';
   launchingShipIcon  = '';
   launchingShipId: number | null = null;
-
   launchTargetUrl = '';
 
   readonly year      = new Date().getFullYear();
   readonly skeletons = Array(6).fill(0);
+
+  // ── Branding signals exposed to the template ─────────────────────────────
+  readonly branding = inject(BrandingService);                                  // ← NEW
 
   constructor(
     public auth: AuthService,
@@ -78,9 +81,9 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  get activeCount(): number { return this.ships().filter(s => s.status === 'active').length; }
+  get activeCount(): number      { return this.ships().filter(s => s.status === 'active').length; }
   get maintenanceCount(): number { return this.ships().filter(s => s.status === 'maintenance').length; }
-  get inactiveCount(): number { return this.ships().filter(s => s.status === 'inactive').length; }
+  get inactiveCount(): number    { return this.ships().filter(s => s.status === 'inactive').length; }
 
   openShip(ship: Ship): void {
     if (this.launchingId() !== null || ship.status !== 'active') return;
@@ -111,9 +114,7 @@ export class DashboardComponent implements OnInit {
       this.launchingShipId,
       this.launchingShipName,
     );
-    this.router.navigate(['/external'], {
-      queryParams: { data: token },
-    });
+    this.router.navigate(['/external'], { queryParams: { data: token } });
   }
 
   deleteShip(event: MouseEvent, id: number): void {
@@ -125,7 +126,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ── Edit ──────────────────────────────────────────────────────────────
   editShip(event: MouseEvent, ship: Ship): void {
     event.stopPropagation();
     const ref = this.dialog.open(AddShipModalComponent, {
@@ -141,7 +141,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ── Add ───────────────────────────────────────────────────────────────
   openAddModal(): void {
     const ref = this.dialog.open(AddShipModalComponent, {
       width: '520px', maxWidth: '95vw',

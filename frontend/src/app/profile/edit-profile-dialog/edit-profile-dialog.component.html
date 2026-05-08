@@ -1,0 +1,148 @@
+<div class="ep-dialog">
+  <header class="ep-header">
+    <h2 class="ep-title">Edit Profile</h2>
+    <button class="ep-close" (click)="cancel()" aria-label="Close" type="button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <hr class="ep-rule" />
+
+  <form class="ep-body" [formGroup]="form" (ngSubmit)="save()" novalidate>
+
+    <!-- ─── Profile photo ─── -->
+    <section class="ep-section">
+      <label class="ep-section-label">Profile Photo</label>
+      <div class="ep-upload-row">
+        <label
+          class="ep-drop"
+          [class.ep-drop--active]="photoDragActive()"
+          (dragover)="onDragOver($event, 'photo')"
+          (dragleave)="onDragLeave($event, 'photo')"
+          (drop)="onDrop($event, 'photo')"
+        >
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+            (change)="onPhotoSelected($event)"
+            hidden
+            #photoInput
+          />
+          <div class="ep-drop-text">
+            <span class="ep-drop-cta">Choose File</span>
+            <span class="ep-drop-sub">{{ photoFile()?.name || 'No file chosen' }}</span>
+          </div>
+          <div class="ep-drop-hint">
+            <mat-icon>cloud_upload</mat-icon>
+            <span>Drag & drop an image here,<br/>or click to select<br/><em>(max 10 MB)</em></span>
+          </div>
+        </label>
+
+        <div class="ep-preview ep-preview--avatar">
+          <img
+            *ngIf="photoPreview(); else noPhoto"
+            [src]="photoPreview()!"
+            alt="Profile preview"
+            (error)="$any($event.target).style.display='none'"
+          />
+          <ng-template #noPhoto>
+            <span class="ep-preview__initial">{{ branding.avatarInitial() }}</span>
+          </ng-template>
+          <button
+            type="button"
+            class="ep-preview-clear"
+            *ngIf="photoFile()"
+            (click)="clearPhoto()"
+            matTooltip="Discard selection"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Organization logo ─── -->
+    <section class="ep-section">
+      <label class="ep-section-label">Organization Logo</label>
+      <div class="ep-upload-row">
+        <label
+          class="ep-drop"
+          [class.ep-drop--active]="logoDragActive()"
+          (dragover)="onDragOver($event, 'logo')"
+          (dragleave)="onDragLeave($event, 'logo')"
+          (drop)="onDrop($event, 'logo')"
+        >
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+            (change)="onLogoSelected($event)"
+            hidden
+          />
+          <div class="ep-drop-text">
+            <span class="ep-drop-cta">Choose File</span>
+            <span class="ep-drop-sub">{{ logoFile()?.name || 'No file chosen' }}</span>
+          </div>
+          <div class="ep-drop-hint">
+            <mat-icon>cloud_upload</mat-icon>
+            <span>Drag & drop a logo here,<br/>or click to select<br/><em>(max 10 MB)</em></span>
+          </div>
+        </label>
+
+        <div class="ep-preview ep-preview--logo">
+          <img
+            [src]="logoPreview() || branding.DEFAULT_LOGO"
+            alt="Logo preview"
+            (error)="$any($event.target).src = branding.DEFAULT_LOGO"
+          />
+          <button
+            type="button"
+            class="ep-preview-clear"
+            *ngIf="logoFile()"
+            (click)="clearLogo()"
+            matTooltip="Discard selection"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Text fields ─── -->
+    <mat-form-field appearance="outline" class="ep-field">
+      <mat-label>Name *</mat-label>
+      <input matInput formControlName="display_name" maxlength="255" required autocomplete="name" />
+      <mat-error *ngIf="form.controls.display_name.hasError('required')">
+        Name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ep-field">
+      <mat-label>Organization Name</mat-label>
+      <input
+        matInput
+        formControlName="org_name"
+        maxlength="255"
+        [placeholder]="branding.DEFAULT_BRAND_NAME"
+        autocomplete="organization"
+      />
+      <mat-hint>Replaces the static brand text in the sidebar / header.</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="ep-field">
+      <mat-label>Email</mat-label>
+      <input matInput [value]="branding.email()" readonly />
+      <mat-hint>Email changes are handled by your administrator.</mat-hint>
+    </mat-form-field>
+
+    <!-- ─── Footer actions ─── -->
+    <div class="ep-actions">
+      <button type="button" class="ep-btn ep-btn--ghost" (click)="cancel()" [disabled]="saving()">
+        CANCEL
+      </button>
+      <button type="submit" class="ep-btn ep-btn--primary" [disabled]="form.invalid || saving()">
+        <ng-container *ngIf="!saving(); else loading">SAVE</ng-container>
+        <ng-template #loading><mat-spinner diameter="18" strokeWidth="2.5"></mat-spinner></ng-template>
+      </button>
+    </div>
+  </form>
+</div>
