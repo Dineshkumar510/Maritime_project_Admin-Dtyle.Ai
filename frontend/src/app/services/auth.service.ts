@@ -3,14 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { BrandingService } from './branding.service';
+import { BrandingService, BrandingProfile } from './branding.service';
 
 export interface AdminUser {
   id: number;
   name: string;
   email: string;
   role: string;
-  // ── new branding fields (optional so older payloads still type-check) ──
   username?: string;
   profile_photo_url?: string | null;
   org_logo_url?: string | null;
@@ -49,20 +48,11 @@ export class AuthService {
   private readonly apiUrl = environment.expressApiUrl;
 
   constructor() {
-    // Hydrate BrandingService from cache immediately so the UI shows
-    // the right logo/avatar even before /api/me responds.
-    const cached = this._user();
-    if (cached) this.branding.setProfile(cached as any);
-
-    // If we believe we're logged in, ask the server for a fresh profile.
-    // Failures are silent — the interceptor will trigger a real logout
-    // on 401 if the token is actually dead.
     if (this.isLoggedIn()) {
       this.refreshMe().subscribe({ error: () => {} });
     }
   }
 
-  // ── Login / logout ──────────────────────────────────────────────────────
 
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http
@@ -114,7 +104,6 @@ export class AuthService {
     this._clearSession();
   }
 
-  // ── Token / profile refresh ─────────────────────────────────────────────
 
   refreshToken(): Observable<{ success: boolean; token: string }> {
     return this.http
@@ -129,29 +118,34 @@ export class AuthService {
       );
   }
 
-  /**
-   * Fetch the current user from the server and push the profile fields
-   * into BrandingService. Called on app boot from this service's
-   * constructor and after a profile edit (so a hard refresh doesn't
-   * matter).
-   */
+
   refreshMe(): Observable<AdminUser> {
     return this.http
       .get<MeResponse>(`${this.apiUrl}/me`, { withCredentials: true })
       .pipe(
         tap((res) => {
           if (res.user) {
-            this._saveUser(res.user);
-            this.branding.setProfile(res.user as any);
+            this._saveUser(res.user);           // keeps maritime_user fresh
+            this.branding.setProfile(res.user as any); // keeps maritime_branding fresh
           }
         }),
-        // map(r => r.user)
-        // not using map to avoid an extra import; cast in caller is fine
         catchError((err) => throwError(() => err)),
       ) as unknown as Observable<AdminUser>;
   }
 
-  // ── Read accessors ──────────────────────────────────────────────────────
+
+  mergeBrandingIntoUser(profile: BrandingProfile): void {
+    const current = this._user();
+    if (!current) return;
+    const merged: AdminUser = {
+      ...current,
+      name:              profile.name || profile.username || current.name,
+      profile_photo_url: profile.profile_photo_url ?? current.profile_photo_url,
+      org_logo_url:      profile.org_logo_url      ?? current.org_logo_url,
+      org_name:          profile.org_name          ?? current.org_name,
+    };
+    this._saveUser(merged);
+  }
 
   getToken(): string | null { return this._token(); }
   hasRole(...roles: string[]): boolean {
@@ -159,7 +153,6 @@ export class AuthService {
     return !!r && roles.includes(r);
   }
 
-  // ── Storage plumbing ────────────────────────────────────────────────────
 
   private _saveUser(user: AdminUser): void {
     sessionStorage.setItem('maritime_user', JSON.stringify(user));
